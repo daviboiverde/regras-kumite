@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#faf8f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-32.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kumite">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Kumite WTKU</title>
+<meta name="description" content="App de estudo das regras de kumite individual e por equipes do livro WTKU, em português, com a página de cada regra.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* Estilo: accent-ladder (taste-skill), com o bordô da capa do livro como a única cor.
+   A cor cheia só vai em marcas pequenas; os tons claros fazem o trabalho das áreas. */
+:root{
+  --ground:#faf8f8; --surface:#ffffff; --raised:#f3f2f2; --active:#ececec;
+  --border:#e7e3e3; --rule:#f1eeee; --control:#d3cdcd;
+  --text:#161214; --muted:#5f5a5c; --faint:#6b6567;
+  --accent:#8c2427; --accent-soft:#fbf1f1; --accent-track:#f3d9da; --accent-ink:#5e1518;
+  --positive:#247b50; --negative:#c4242a;
+  --pill-neg-bg:#ffedea; --pill-neg-ink:#831c1e;
+  --pill-warn-bg:#fffbeb; --pill-warn-ink:#92400e; --pill-warn-line:#fde68a;
+  --scrim:rgba(20,14,16,.45);
+  --radius-card:8px; --radius-control:6px; --radius-chip:4px;
+  --gap:16px; --pad:16px; --tap:44px;
+  --fs-title:26px; --fs-section:17px; --fs-kpi:24px; --fs-body:15px; --fs-small:13px;
+  --font:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0f0f0f; --surface:#181818; --raised:#222222; --active:#2a2a2a;
+    --border:#2c2c2c; --rule:#232323; --control:#4a4a4a;
+    --text:#f4f2f2; --muted:#b4b0b1; --faint:#9a9697;
+    --accent:#e8726d; --accent-soft:#2a1717; --accent-track:#4a2323; --accent-ink:#f3b2ae;
+    --positive:#3fc07a; --negative:#ef6b6b;
+    --pill-neg-bg:#3a1c1e; --pill-neg-ink:#ffb4ae;
+    --pill-warn-bg:#2e2412; --pill-warn-ink:#f5c26b; --pill-warn-line:#5a4417;
+    --scrim:rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0f0f0f; --surface:#181818; --raised:#222222; --active:#2a2a2a;
+  --border:#2c2c2c; --rule:#232323; --control:#4a4a4a;
+  --text:#f4f2f2; --muted:#b4b0b1; --faint:#9a9697;
+  --accent:#e8726d; --accent-soft:#2a1717; --accent-track:#4a2323; --accent-ink:#f3b2ae;
+  --positive:#3fc07a; --negative:#ef6b6b;
+  --pill-neg-bg:#3a1c1e; --pill-neg-ink:#ffb4ae;
+  --pill-warn-bg:#2e2412; --pill-warn-ink:#f5c26b; --pill-warn-line:#5a4417;
+  --scrim:rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--ground);color:var(--text);font:400 var(--fs-body)/1.55 var(--font);font-optical-sizing:auto}
+button{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- Shell ---------- */
+.app{min-height:100vh}
+.side{display:none}
+.top{position:sticky;top:0;z-index:20;height:calc(52px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 4px 0;background:var(--ground);display:flex;align-items:center;gap:2px;border-bottom:1px solid transparent;transition:border-color .15s}
+.top.lined{border-bottom-color:var(--border)}
+.top .ttl{flex:1;min-width:0;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:8px}
+.top .brand{display:flex;align-items:center;gap:10px;padding-left:12px;flex:1;font-weight:700;font-size:16px}
+.ib{width:var(--tap);height:var(--tap);display:grid;place-items:center;border:0;background:none;border-radius:10px;cursor:pointer;color:var(--text)}
+.ib:active{background:var(--active)}
+.mark{width:28px;height:28px;flex:none}
+main{padding:8px var(--pad) calc(96px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);padding:0 4px env(safe-area-inset-bottom)}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;font-size:11.5px;font-weight:500;color:var(--faint);border-radius:10px;transition:color .12s}
+.tabs a svg.i{width:22px;height:22px}
+.tabs a[aria-current="page"]{color:var(--accent-ink)}
+.tabs a[aria-current="page"] svg.i{color:var(--accent);stroke-width:2}
+.tabs a:active{background:var(--raised)}
+
+@media (min-width:960px){
+  .top,.tabs{display:none}
+  .side{display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;width:240px;padding:20px 12px;background:var(--ground);border-right:1px solid var(--border)}
+  .side .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;padding:4px 10px 22px}
+  .side nav a,.side button.nv{display:flex;align-items:center;gap:10px;height:38px;padding:0 10px;border-radius:8px;color:var(--muted);font-size:14.5px;border:0;background:none;width:100%;cursor:pointer;text-align:left}
+  .side nav a svg.i,.side button.nv svg.i{width:18px;height:18px}
+  .side nav a:hover,.side button.nv:hover{background:var(--raised);color:var(--text)}
+  .side nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+  .side nav a[aria-current="page"] svg.i{color:var(--accent)}
+  .side .grp{font-size:12.5px;color:var(--faint);padding:20px 10px 6px}
+  .side .foot{margin-top:auto}
+  main{margin-left:240px;max-width:none;padding:36px 48px 64px}
+  main>.scr{max-width:760px;margin:0 auto}
+}
+
+/* ---------- Screen title ---------- */
+.crumb{display:none}
+@media (min-width:960px){.crumb{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:13.5px;margin:0 0 10px -4px;padding:4px;border-radius:6px}.crumb:hover{color:var(--text)}}
+h1{font-size:var(--fs-title);line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 6px}
+.lead{color:var(--muted);margin:0 0 18px;max-width:40em}
+h2{font-size:var(--fs-section);font-weight:600;margin:28px 0 10px}
+.hrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.hrow a{color:var(--accent-ink);font-weight:600;font-size:14px;white-space:nowrap}
+.pill{display:inline-flex;align-items:center;flex:none;white-space:nowrap;font-size:12.5px;font-weight:500;line-height:1;padding:5px 7px;border-radius:var(--radius-chip);background:var(--raised);color:var(--muted)}
+.pill.acc{background:var(--accent-soft);color:var(--accent-ink)}
+
+/* ---------- Search field ---------- */
+.field{display:flex;align-items:center;gap:10px;width:100%;height:46px;padding:0 14px;border:1px solid var(--control);border-radius:10px;background:var(--surface);color:var(--faint);cursor:text;text-align:left}
+.field input{flex:1;min-width:0;border:0;outline:0;background:none;font:inherit;font-size:16px;color:var(--text)}
+.field input::placeholder{color:var(--faint)}
+.field:focus-within{border-color:var(--accent)}
+
+/* ---------- Home: categorias ---------- */
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.cat{display:flex;flex-direction:column;min-height:132px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);transition:background .12s,border-color .12s}
+.cat:active{background:var(--raised)}
+@media (hover:hover){.cat:hover{border-color:var(--control)}}
+.cat b{font-size:16px;font-weight:600;line-height:1.25}
+.cat .d{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.4}
+.cat .f{margin-top:auto;padding-top:12px;display:flex;align-items:baseline;gap:6px}
+.cat .f strong{font-size:var(--fs-kpi);font-weight:600;line-height:1}
+.cat .f span{font-size:13px;color:var(--muted)}
+.cat .f svg{margin-left:auto;color:var(--faint);align-self:center}
+@media (min-width:620px){.cats{grid-template-columns:repeat(4,1fr)}}
+
+.lead-card{margin-top:24px;background:var(--accent-soft);border-radius:var(--radius-card);padding:16px 16px 6px}
+.lead-card h2{margin:0 0 2px;color:var(--accent-ink)}
+.lead-card .lead{margin-bottom:6px;font-size:14px}
+.lead-card .row{border-color:var(--accent-track)}
+.lead-card .more{display:flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tap);font-weight:600;color:var(--accent-ink);font-size:14.5px}
+
+/* ---------- Listas ---------- */
+.list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden}
+.lead-card .list{background:none;border:0;border-radius:0}
+.row{display:flex;align-items:center;gap:12px;min-height:64px;padding:11px 14px;border-top:1px solid var(--rule);transition:background .12s;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;cursor:pointer}
+.list>.row:first-child{border-top:0}
+.row:active{background:var(--raised)}
+@media (hover:hover){.row:hover{background:var(--raised)}.lead-card .row:hover{background:transparent}}
+.row .tx{flex:1;min-width:0}
+.row .tx b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.row .tx span{display:block;font-size:13.5px;color:var(--muted);line-height:1.4;margin-top:2px}
+.row>svg.i{color:var(--faint);width:18px;height:18px}
+.row .lic{color:var(--muted);width:20px;height:20px}
+
+/* Faixa de números do formato (KPIs como texto, um contêiner dividido) */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);margin:4px 0 8px}
+.strip div{padding:12px 14px;border-left:1px solid var(--border)}
+.strip div:first-child{border-left:0}
+.strip small{display:block;font-size:12.5px;color:var(--muted)}
+.strip strong{display:block;font-size:20px;font-weight:600;line-height:1.25;margin-top:2px}
+.strip em{font-style:normal;font-size:13px;color:var(--muted);font-weight:400}
+
+/* ---------- Regra ---------- */
+.rhead{margin-bottom:6px}
+.rhead .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 4px}
+.prose{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:4px 16px 8px;margin-top:14px}
+.prose>*:first-child{margin-top:12px}
+.prose p{margin:12px 0}
+.prose ul,.prose ol{padding-left:1.3em;margin:12px 0}
+.prose li{margin:7px 0}
+.prose h3{font-size:16px;font-weight:600;margin:20px 0 6px}
+.prose b{font-weight:600}
+.prose .pg{display:inline-block;white-space:nowrap;font-size:12px;font-weight:500;line-height:1;padding:4px 6px;border-radius:var(--radius-chip);background:var(--raised);color:var(--muted);vertical-align:1px}
+.prose .key{background:var(--accent-soft);color:var(--text);border-radius:8px;padding:11px 13px;margin:12px 0}
+.prose .note{background:var(--pill-warn-bg);color:var(--pill-warn-ink);border:1px solid var(--pill-warn-line);border-radius:8px;padding:10px 12px;margin:12px 0;font-size:14px}
+.prose .note b{color:var(--pill-warn-ink)}
+.tw{overflow-x:auto;margin:12px -16px;padding:0 16px}
+.tw table{border-collapse:collapse;width:100%;font-size:14px;min-width:100%}
+.tw th{font-size:12.5px;font-weight:500;color:var(--muted);text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--border);vertical-align:bottom}
+.tw td{padding:10px 10px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.tw tr:last-child td{border-bottom:0}
+.tw td.n{font-weight:600;white-space:nowrap}
+.matrix{min-width:0;font-size:13.5px}.matrix td:not(:first-child),.matrix th{white-space:nowrap;padding-right:8px}
+.matrix td,.matrix th{text-align:center}.matrix td:first-child,.matrix th:first-child{text-align:left}
+.s-none{color:var(--muted)}.s-kk{color:var(--pill-warn-ink);font-weight:600}.s-chui{color:var(--negative);font-weight:600}
+.s-hs span,.s-hs{font-weight:600}
+td.s-hs{background:var(--pill-neg-bg);color:var(--pill-neg-ink)}
+.t{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--accent-ink);text-decoration:underline;text-decoration-style:dotted;text-decoration-color:var(--accent);text-underline-offset:3px;cursor:pointer}
+.court{margin:12px 0}
+.court svg{width:100%;max-width:320px;display:block;margin:0 auto}
+.court figcaption{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+.pn{display:grid;gap:10px;margin-top:16px}
+@media (min-width:560px){.pn{grid-template-columns:1fr 1fr}}
+.pn a{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);min-height:60px}
+.pn a small{font-size:12.5px;color:var(--muted)}
+.pn a b{font-weight:600;font-size:14.5px;line-height:1.3}
+.pn a.nx{text-align:right}
+.pn a:active{background:var(--raised)}
+
+/* ---------- Sinais ---------- */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--raised);border-radius:10px;padding:4px;gap:4px}
+.seg button{min-height:42px;border:0;border-radius:7px;background:none;font-weight:500;color:var(--muted);cursor:pointer;font-size:14.5px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);font-weight:600;outline:1px solid var(--border);outline-offset:-1px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:12px calc(-1*var(--pad)) 12px;padding:2px var(--pad);scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:1px solid var(--border);background:var(--surface);border-radius:999px;font-size:14px;cursor:pointer;color:var(--text)}
+.chips button span{color:var(--muted);font-variant-numeric:tabular-nums}
+.chips button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.chips button[aria-pressed="true"] span{color:var(--accent-ink)}
+.sig{display:grid;grid-template-columns:34px 1fr;gap:2px 10px;padding:13px 14px;border-top:1px solid var(--rule)}
+.list>.sig:first-child{border-top:0}
+.sig .n{grid-row:span 3;font-size:17px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;padding-top:1px}
+.sig b{font-size:15px;font-weight:600}
+.sig .m{font-size:14px;color:var(--text)}
+.sig .h{font-size:13.5px;color:var(--muted)}
+.empty{padding:22px 16px;color:var(--muted);text-align:center;font-size:14px}
+
+/* ---------- Glossário e busca ---------- */
+.gx b{color:var(--text)}
+.res-h{font-size:13px;color:var(--muted);margin:20px 2px 8px;font-weight:500}
+
+/* ---------- Painel (bottom sheet) ---------- */
+.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s,visibility 0s .18s;z-index:50}
+.scrim.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .18s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;background:var(--surface);border-radius:16px 16px 0 0;transform:translateY(105%);visibility:hidden;transition:transform .2s var(--ease),visibility 0s .2s;padding:8px 18px calc(18px + env(safe-area-inset-bottom));max-height:80vh;overflow:auto;box-shadow:0 -4px 16px rgba(0,0,0,.08)} /* taste-skill-ignore: painel flutuante (dialog) */
+.sheet.open{transform:none;visibility:visible;transition:transform .24s var(--ease)}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--control);margin:2px auto 14px}
+.sheet h3{font-size:22px;font-weight:700;margin:0 0 6px;color:var(--accent-ink)}
+.sheet p{margin:6px 0 10px;font-size:15.5px}
+.sheet .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tap);border-radius:10px;font-weight:600;font-size:15px;cursor:pointer;border:1px solid var(--control);background:var(--surface);color:var(--text)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.pri{color:#1a0a0a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri{color:#1a0a0a}}
+.btn:active{opacity:.85}
+@media (min-width:960px){.sheet{left:calc(50% + 120px);right:auto;width:560px;margin-left:-280px}}
+.steps{padding-left:1.3em;margin:8px 0;font-size:15.5px}.steps li{margin:8px 0}
+.foot-note{margin:28px 2px 0;font-size:12.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" aria-label="Navegação">
+    <a class="brand" href="#/"><svg class="mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#8c2427"/><circle cx="18.5" cy="9.5" r="5.5" fill="#d7261e"/><rect x="5" y="19" width="18" height="3" rx="1.5" fill="#fff"/></svg>Kumite WTKU</a>
+    <nav id="sidenav"></nav>
+    <div class="foot"><button class="nv" id="theme2"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>Tema claro ou escuro</button></div>
+  </aside>
+
+  <header class="top" id="top"></header>
+  <main id="main" tabindex="-1"></main>
+  <nav class="tabs" id="tabs" aria-label="Seções"></nav>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" aria-hidden="true">
+  <div class="grab"></div>
+  <h3 id="sh-t"></h3>
+  <div id="sh-b"></div>
+  <div class="acts"><button class="btn" id="sh-x">Fechar</button><a class="btn pri" id="sh-go" href="#/">Ver a regra</a></div>
+</div>
+
+<script>
+const RULES = [
+{
+"id": "definicao",
+"cat": "geral",
+"t": "Definição e categorias",
+"s": "Como se vence uma luta",
+"p": "11",
+"b": "<p>Kumite é uma luta livre entre duas pessoas, <b>sem contato</b>. Vence quem acerta uma técnica que cumpre os requisitos de <button class=\"t\" data-t=\"todome\">todome-waza</button> (golpe finalizador): execução física correta, timing correto, <button class=\"t\" data-t=\"maai\">ma-ai</button> (distância eficaz) e alvo válido.</p>\n      <p>Se ninguém fizer todome-waza, vence quem tiver mais pontos por técnicas eficazes e/ou penalidades do adversário. <span class=\"pg\">p. 11</span></p>\n      <p>Categorias previstas: individual masculino, individual feminino e equipe masculina de 3 atletas. <span class=\"pg\">p. 11</span></p>"
+},
+{
+"id": "area",
+"cat": "geral",
+"t": "Área de competição",
+"s": "Tamanho, linhas e condições",
+"p": "11–12",
+"b": "<ul>\n        <li>Piso plano e semi-amortecido, com cuidados de segurança. <span class=\"pg\">p. 11</span></li>\n        <li>Quadrado de <b>8 m</b>, medido pelas linhas externas, com área de segurança em volta, nas mesmas condições. <span class=\"pg\">p. 11</span></li>\n        <li>Duas linhas paralelas de 0,5 m, a <b>1,5 m</b> de cada lado do centro, perpendiculares à linha onde o árbitro central fica no início. São as marcas onde os atletas se posicionam. <span class=\"pg\">pp. 11–12</span></li>\n        <li>Posição dos juízes e mesários conforme o Apêndice I. <span class=\"pg\">p. 12</span></li>\n        <li>Ambiente entre 15 °C e 24 °C, umidade de 40% a 80%, iluminação mínima de 400 lux e área livre de obstáculos, como luz excessiva de filmagem. <span class=\"pg\">p. 12</span></li>\n      </ul>"
+},
+{
+"id": "alvos",
+"cat": "geral",
+"t": "Alvos válidos e proibidos",
+"s": "Jodan, chudan e costas expostas",
+"p": "22–23",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Alvo</th><th>Região</th><th>Pág.</th></tr>\n        <tr><td class=\"n\"><button class=\"t\" data-t=\"jodan\">Jodan</button></td><td>Rosto: da linha das sobrancelhas até o topo das orelhas (sem incluir as orelhas) e em volta do queixo.</td><td><span class=\"pg\">p. 22</span></td></tr>\n        <tr><td class=\"n\"><button class=\"t\" data-t=\"chudan\">Chudan</button></td><td>Da faixa (cintura) até uma linha imaginária no peito, de axila a axila. Não inclui a lateral do corpo.</td><td><span class=\"pg\">p. 22</span></td></tr>\n        <tr><td class=\"n\">Costas expostas</td><td>Só se o adversário virar o corpo <b>90° ou mais</b> em relação à frente, ou expuser as costas ao cair: valem lateral e costas, sem passar da altura chudan.</td><td><span class=\"pg\">p. 22</span></td></tr>\n      </table></div>\n      <p><b>Alvos proibidos:</b> olhos (ataque com nuki-te, a mão em lança), base do crânio, garganta e virilha. <span class=\"pg\">pp. 22–23</span></p>"
+},
+{
+"id": "ippon",
+"cat": "pontos",
+"t": "Ippon: o ponto cheio",
+"s": "Os três requisitos do golpe finalizador",
+"p": "12–13",
+"b": "<p>Ippon é dado à técnica <button class=\"t\" data-t=\"todome\">todome</button> executada com timing e ma-ai corretos, num alvo válido, de forma que a capacidade de ataque do adversário seria <b>completamente neutralizada</b>. <span class=\"pg\">p. 12</span></p>\n      <h3>Execução todome</h3>\n      <ol>\n        <li><b><button class=\"t\" data-t=\"kime\">Kime</button>:</b> energia máxima no alvo, somando a reação de pressão contra o chão com o impulso do corpo. No fim, pressão máxima no chão e contração muscular total e rápida. <span class=\"pg\">p. 12</span></li>\n        <li><b>Equilíbrio:</b> base ou impulso fortes para aguentar o choque do impacto. <span class=\"pg\">p. 13</span></li>\n        <li><b><button class=\"t\" data-t=\"zanshin\">Zanshin</button>:</b> manter o equilíbrio mental e físico logo depois da técnica. <span class=\"pg\">p. 13</span></li>\n      </ol>\n      <p><b>No chute:</b> a energia máxima só vem pressionando o chão com a perna de apoio no final da extensão. Depois, recolher a perna com força para manter o equilíbrio e seguir. <span class=\"pg\">pp. 13–14</span></p>"
+},
+{
+"id": "timing",
+"cat": "pontos",
+"t": "Timing correto: o momento de kyo",
+"s": "Quando o adversário está desligado",
+"p": "13–14",
+"b": "<p>Timing correto é atacar no exato momento em que o adversário está em <button class=\"t\" data-t=\"kyo\">kyo</button>, mental ou fisicamente. <span class=\"pg\">p. 13</span></p>\n      <div class=\"tw\"><table>\n        <tr><th>Kyo mental</th><th>Kyo físico</th></tr>\n        <tr><td>Instabilidade emocional extrema: medo, raiva, ansiedade, torpor</td><td>Perda de equilíbrio</td></tr>\n        <tr><td>Perda de vontade, vitalidade e determinação de lutar</td><td>O instante do início e durante a execução de uma técnica</td></tr>\n        <tr><td>Perda de antecipação, atenção desligada</td><td>O intervalo entre técnicas ou uma quebra na continuidade</td></tr>\n      </table></div>\n      <p>Chute que não recebe bloqueio adequado é considerado com timing correto. <span class=\"pg\">p. 14</span></p>"
+},
+{
+"id": "maai",
+"cat": "pontos",
+"t": "Ma-ai: a distância certa",
+"s": "Centímetros máximos no impacto",
+"p": "14–15",
+"b": "<p>Ma-ai correto é a distância mais eficaz, combinada com o timing mais oportuno: sem esticar demais, perto o suficiente para o impacto completo da área de contato. <span class=\"pg\">p. 14</span></p>\n      <div class=\"tw\"><table>\n        <tr><th>Alvo</th><th>Distância máxima no impacto</th></tr>\n        <tr><td>Jodan (rosto)</td><td>~5 cm ou menos</td></tr>\n        <tr><td>Chudan (corpo)</td><td>~3 cm ou menos</td></tr>\n        <tr><td>Chudan com chute</td><td>5 cm ou menos</td></tr>\n        <tr><td>Ângulo da técnica</td><td>~80° a 100°</td></tr>\n      </table></div>\n      <div class=\"key\">Se a distância está errada por <b>não alcançar</b> o alvo, não há ippon nem waza-ari. <span class=\"pg\">p. 15</span></div>"
+},
+{
+"id": "wazaari",
+"cat": "pontos",
+"t": "Waza-ari: o meio ponto",
+"s": "Os 5 motivos que tiram o ippon",
+"p": "14–15",
+"b": "<p>Waza-ari é a técnica eficaz que fica abaixo dos critérios de ippon porque: <span class=\"pg\">pp. 14–15</span></p>\n      <ol>\n        <li>a potência total do corpo está um pouco fraca;</li>\n        <li>no momento do foco, a base, o impulso ou os dois estão um pouco fora;</li>\n        <li>o zanshin está um pouco fora;</li>\n        <li>o timing está um pouco fora;</li>\n        <li>a distância está um pouco fora, ou seja, <b>perto demais</b> para a técnica.</li>\n      </ol>\n      <p>Dois waza-ari na mesma luta valem ippon (<button class=\"t\" data-t=\"awase\">awase-waza</button>). <span class=\"pg\">p. 35</span></p>"
+},
+{
+"id": "naopontua",
+"cat": "pontos",
+"t": "Técnicas que não pontuam",
+"s": "Mesmo sendo eficazes",
+"p": "15",
+"b": "<ol>\n        <li><b>Contra-ataque sem defesa.</b> Quando o adversário inicia o ataque, a técnica dele precisa ser coberta, bloqueada ou esquivada. Se não, o seu contra-ataque não conta e você leva <button class=\"t\" data-t=\"mushi\">mu-shi</button>.<div class=\"key\"><b>Exceção:</b> chute em <button class=\"t\" data-t=\"sen\">sen</button> (que antecipa o movimento) contra técnica de mão do adversário, quando quem chuta tem alcance superior.</div></li>\n        <li><b>Corpo fugindo.</b> Técnica numa direção com o corpo recuando para o lado oposto (<button class=\"t\" data-t=\"nige\">nige</button>-tsuki/uchi/ate/geri).</li>\n        <li><b>Depois de agarrar.</b> Técnica feita depois de agarrar o adversário (<button class=\"t\" data-t=\"tsukami\">tsuka-mi</button>). Agarrar e golpear ao mesmo tempo é aceito.</li>\n        <li><b>Sem continuidade.</b> O adversário escorrega ou cai (sozinho ou por técnica anterior) e a técnica seguinte não sai contínua e imediata.</li>\n      </ol>"
+},
+{
+"id": "frente",
+"cat": "pontos",
+"t": "Lado de trás ou lado da frente",
+"s": "O que pode virar ippon",
+"p": "15–16",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Técnica</th><th>Pode valer</th><th>Pág.</th></tr>\n        <tr><td>Perna de trás, ou mão do lado da perna de trás</td><td>Ippon ou waza-ari</td><td><span class=\"pg\">p. 15</span></td></tr>\n        <tr><td>Perna da frente, ou mão do lado da perna da frente</td><td><b>Só waza-ari</b></td><td><span class=\"pg\">p. 16</span></td></tr>\n      </table></div>\n      <p>Conta a posição no <b>início</b> da técnica. <span class=\"pg\">p. 15</span></p>\n      <p>Base com os pés paralelos (afastamento dentro do comprimento de um pé): aplica-se a regra da perna da frente. <span class=\"pg\">p. 16</span></p>"
+},
+{
+"id": "yoshi",
+"cat": "pontos",
+"t": "Yoshi: promoção do ponto",
+"s": "Quando waza-ari sobe para ippon",
+"p": "16",
+"b": "<p>Um waza-ari pode ser promovido a ippon, e uma técnica abaixo de waza-ari pode ser promovida a waza-ari, quando: <span class=\"pg\">p. 16</span></p>\n      <ol>\n        <li>a técnica não provoca nenhuma reação do adversário, pego totalmente despreparado mentalmente;</li>\n        <li>o adversário não consegue se defender fisicamente porque você provocou o kyo físico dele. Exemplo: equilíbrio quebrado.</li>\n      </ol>\n      <p>Os juízes se reúnem pelo menos 24 h antes do torneio para pontuar pelo mesmo padrão. <span class=\"pg\">p. 22</span></p>"
+},
+{
+"id": "tsuki",
+"cat": "tecnicas",
+"t": "Tsuki (soco)",
+"s": "Inclui a regra do kizami-zuki",
+"p": "16–17",
+"b": "<ul>\n        <li><b>Potência:</b> ação rápida e forte do corpo (rotação, deslocamento, subida, descida, vibração, contração e expansão) com o chão como base, levada pela linha do braço. <span class=\"pg\">p. 16</span></li>\n        <li><b>Braço:</b> gira o ombro e depois estende o cotovelo. Ângulo de extensão de <b>45° ou mais</b>. <span class=\"pg\">p. 17</span></li>\n        <li><b>Kime:</b> os dois pés firmes no chão, com contração forte e rápida ao longo da linha da técnica, numa respiração completa, pressionando o chão. <span class=\"pg\">p. 17</span></li>\n      </ul>\n      <div class=\"key\"><b>Kizami-zuki</b> (soco da mão da frente) só é aceito com alvo <b>jodan</b>. <span class=\"pg\">p. 17</span></div>"
+},
+{
+"id": "uchi",
+"cat": "tecnicas",
+"t": "Uchi (golpe)",
+"s": "Só pontua no rosto",
+"p": "17–18",
+"b": "<ul>\n        <li><b>Potência:</b> mesma base do tsuki, mas transmitida pelo lado do braço. <span class=\"pg\">p. 17</span></li>\n        <li><b>Braço:</b> gira o ombro e depois dá o estalo do cotovelo. Ângulo do estalo de <b>45° ou mais</b>. <span class=\"pg\">p. 17</span></li>\n        <li><b>Kime:</b> os dois pés firmes no chão. No <b>ura-ken uchi</b>, aceita-se a base forte num pé só, com apenas o calcanhar do outro pé fora do contato total. <span class=\"pg\">p. 18</span></li>\n      </ul>\n      <div class=\"key\">Uchi só é reconhecido como ponto em <b>jodan</b>. Chudan não é aceito. <span class=\"pg\">p. 18</span></div>"
+},
+{
+"id": "ate",
+"cat": "tecnicas",
+"t": "Ate: cotovelada e joelhada",
+"s": "Hiji-ate e hiza-ate",
+"p": "18–19",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Técnica</th><th>Potência</th><th>Ângulo mínimo</th><th>Kime</th><th>Pág.</th></tr>\n        <tr><td class=\"n\">Hiji-ate</td><td>Ação rápida do corpo, levada pelo cotovelo</td><td>Rotação do ombro ≥ 45°</td><td>Os dois pés firmes</td><td><span class=\"pg\">pp. 18–19</span></td></tr>\n        <tr><td class=\"n\">Hiza-ate</td><td>Pêndulo ou rotação, levada pela articulação do joelho</td><td>Flexão do quadril ≥ 90°</td><td>Pé de apoio firme</td><td><span class=\"pg\">p. 19</span></td></tr>\n      </table></div>"
+},
+{
+"id": "keri",
+"cat": "tecnicas",
+"t": "Keri (chutes)",
+"s": "Ke-age, ke-komi e chute saltando",
+"p": "19–21",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Chute</th><th>Movimento</th><th>Kime</th><th>Chute saltando</th></tr>\n        <tr><td class=\"n\">Ke-age<br>(estalo) <span class=\"pg\">pp. 19–20</span></td><td>Pêndulo ou rotação, levado pelo lado da perna. Estalo do joelho ≥ 90°.</td><td>Pé de apoio firme; contato muito curto com recolhida rápida; estalo e recolhida ≥ 90°; numa respiração.</td><td>Só vale se acertar <b>subindo</b>, não descendo. <span class=\"pg\">p. 20</span></td></tr>\n        <tr><td class=\"n\">Ke-komi<br>(penetração) <span class=\"pg\">pp. 20–21</span></td><td>Pêndulo, levado pela linha reta da perna. Extensão do joelho ≥ 90°.</td><td>Pé de apoio firme; no fim, recolher a perna para recuperar o equilíbrio; extensão e recolhida ≥ 90°.</td><td>Vale, mas a linha do chute tem de ser a mesma da subida ou da descida. <span class=\"pg\">p. 21</span></td></tr>\n      </table></div>\n      <div class=\"note\"><b>Conferir no livro:</b> a regra do chute saltando é escrita de forma diferente para ke-age (p. 20) e ke-komi (p. 21). Aqui está traduzida como o livro escreve em cada uma.</div>"
+},
+{
+"id": "partes",
+"cat": "tecnicas",
+"t": "Partes do corpo que pontuam",
+"s": "Superfícies de contato aceitas",
+"p": "21–22",
+"b": "<ul>\n        <li><b>Mãos e braços:</b> seiken (punho), ura-ken (dorso do punho), shuto (mão em faca), haito (borda interna da mão), enpi (cotovelo).</li>\n        <li><b>Pernas:</b> koshi (planta do pé), sokuto (lateral do pé), ensho (calcanhar), hitsui (joelho).</li>\n      </ul>"
+},
+{
+"id": "tempo",
+"cat": "tempo",
+"t": "Quando o tempo corre e quando para",
+"s": "E o que vale no sinal final",
+"p": "23",
+"b": "<ul>\n        <li><b>Começa</b> com <button class=\"t\" data-t=\"hajime\">Hajime</button> ou <button class=\"t\" data-t=\"tsuzukete\">Tsuzukete Hajime</button>. <b>Para</b> com <button class=\"t\" data-t=\"yame\">Yame</button> ou <button class=\"t\" data-t=\"jogai\">Jo-gai</button>.</li>\n        <li>Também para quando o árbitro indica um ponto. Se o ponto for cancelado, o tempo volta a correr na hora.</li>\n        <li>Se os atletas param sozinhos e o árbitro não interrompe, o tempo continua até um deles voltar à posição inicial.</li>\n        <li>Técnica <b>junto</b> com o sinal de fim conta como dentro do tempo: ponto, penalidade ou violação.</li>\n        <li>Técnica <b>depois</b> do sinal de fim não conta para ponto nem penalidade, mesmo que o árbitro não diga Yame.</li>\n      </ul>"
+},
+{
+"id": "som",
+"cat": "tempo",
+"t": "Sinais sonoros",
+"s": "30 segundos e fim do tempo",
+"p": "23–24",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Som</th><th>Significado</th><th>Pág.</th></tr>\n        <tr><td>1 toque curto (sino, buzina ou gongo)</td><td>Faltam 30 segundos. O árbitro diz <button class=\"t\" data-t=\"shibaraku\">Shibaraku</button>, mas a luta <b>não para</b>.</td><td><span class=\"pg\">p. 24</span> <span class=\"pg\">p. 40</span></td></tr>\n        <tr><td>2 toques curtos</td><td>Fim do tempo</td><td><span class=\"pg\">p. 23</span></td></tr>\n      </table></div>"
+},
+{
+"id": "jogai",
+"cat": "saida",
+"t": "Jo-gai: saída da área",
+"s": "2 saídas = waza-ari do adversário",
+"p": "24",
+"b": "<p><b>O que é:</b> cruzar a linha da quadra e tocar o chão do lado de fora com qualquer parte do corpo, sem o árbitro ter dito Yame nem dado ponto. <span class=\"pg\">p. 24</span></p>\n      <p>Técnica feita fora da área não vale. <b>Exceção:</b> quem ataca está inteiro dentro da quadra e a técnica faz o adversário sair. <span class=\"pg\">p. 24</span></p>\n      <div class=\"key\"><b>Penalidade:</b> 2 jo-gai na luta = <b>waza-ari para o adversário</b>. Mais 2 jo-gai = outro waza-ari. <span class=\"pg\">p. 24</span></div>\n      <p>Sinais do árbitro: aponta o atleta e depois a linha, dizendo Jo-gai. Indicador para cima = 1º (<button class=\"t\" data-t=\"ikkai\">Ikkai</button>). Indicador e médio = 2º (<button class=\"t\" data-t=\"nikai\">Nikai</button>), e então declara waza-ari para o adversário. <span class=\"pg\">pp. 51–52</span></p>"
+},
+{
+"id": "jogai-casos",
+"cat": "saida",
+"t": "Jo-gai: casos especiais",
+"s": "Os dois saem, técnica e saída",
+"p": "24–25",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Situação</th><th>Quem é penalizado</th><th>Pág.</th></tr>\n        <tr><td>Os dois saem</td><td>Só o primeiro a sair. Se saírem juntos, ninguém.</td><td><span class=\"pg\">p. 24</span></td></tr>\n        <tr><td>Alguém ataca e depois um ou os dois saem antes do Yame</td><td>Ninguém, se a técnica virar ponto. Se não virar, o primeiro a sair.</td><td><span class=\"pg\">p. 24</span></td></tr>\n        <tr><td>Possível violação (ex.: pancada no corpo) e depois saída antes do Yame</td><td>Ninguém pelo jo-gai, se o ato for declarado violação. Se não for, o primeiro a sair.</td><td><span class=\"pg\">p. 25</span></td></tr>\n        <tr><td>Um cai e sai</td><td>Leva as duas penalidades.</td><td><span class=\"pg\">p. 26</span></td></tr>\n        <tr><td>Um sai e o outro cai</td><td>Cada um leva a sua.</td><td><span class=\"pg\">p. 26</span></td></tr>\n      </table></div>"
+},
+{
+"id": "tento",
+"cat": "saida",
+"t": "Ten-to: a queda",
+"s": "Quando cair vira penalidade",
+"p": "25–26",
+"b": "<p><b>O que é:</b> cair e tocar o chão com algo além dos pés ou das mãos, sem ponto dado nem recebido. Vale para queda sozinha ou causada pelo adversário. <span class=\"pg\">p. 25</span></p>\n      <div class=\"tw\"><table>\n        <tr><th>Situação</th><th>Resultado</th><th>Pág.</th></tr>\n        <tr><td>Os dois caem</td><td>Só o primeiro a cair é penalizado. Juntos, ninguém.</td><td><span class=\"pg\">p. 25</span></td></tr>\n        <tr><td>Técnica e depois queda antes do Yame</td><td>Sem ten-to se a técnica virar ponto. Se não, o primeiro a cair.</td><td><span class=\"pg\">p. 25</span></td></tr>\n        <tr><td>Caiu por causa de uma tentativa de todome do adversário <b>com contato físico</b></td><td>Quem caiu <b>não</b> leva ten-to, sendo a técnica violação ou não.</td><td><span class=\"pg\">pp. 25–26</span></td></tr>\n      </table></div>"
+},
+{
+"id": "penalty",
+"cat": "saida",
+"t": "Como funciona o penalty match",
+"s": "Passo a passo e regras dos 5 segundos",
+"p": "26–27",
+"b": "<ol>\n        <li>Quem caiu volta para o centro da linha do fundo, com os dois calcanhares na linha, em <button class=\"t\" data-t=\"shizentai\">shizen-tai</button>. Comando: <button class=\"t\" data-t=\"sagaru\">Sagaru</button>. <span class=\"pg\">p. 26</span> <span class=\"pg\">p. 52</span></li>\n        <li>Quem não foi penalizado avança até ficar de frente, também em shizen-tai. Os dois estendem os braços até as pontas dos dedos se tocarem e voltam a shizen-tai. <span class=\"pg\">p. 26</span></li>\n        <li>O árbitro diz Tsuzukete, Hajime e a mesa conta <b>5 segundos</b>. <span class=\"pg\">p. 53</span></li>\n        <li>Quem não foi penalizado ataca a partir dessa posição.</li>\n      </ol>\n      <div class=\"tw\"><table>\n        <tr><th>Regra</th><th>Pág.</th></tr>\n        <tr><td>Se quem não foi penalizado não se mexer em 5 s, a penalidade é anulada e a luta volta às posições normais.</td><td><span class=\"pg\">p. 26</span></td></tr>\n        <tr><td>Quem caiu e se mexer antes do outro leva <b>jo-gai</b>. Qualquer movimento do outro, até finta ou mexer o pé, já conta como movimento.</td><td><span class=\"pg\">p. 27</span></td></tr>\n        <tr><td>Quem caiu só pode contra-atacar (inclusive com chute) <b>depois de defender</b>: cobrir, bloquear ou esquivar. Sem defesa, o contra-ataque não vale e leva <b>mu-shi</b>.</td><td><span class=\"pg\">p. 27</span></td></tr>\n        <tr><td>Se quem não foi penalizado se mexer e ninguém pontuar, o penalty match é anulado e a luta segue normal.</td><td><span class=\"pg\">p. 27</span></td></tr>\n        <tr><td>Se o tempo acabar durante o penalty match, ele termina sem pontos.</td><td><span class=\"pg\">p. 27</span></td></tr>\n        <tr><td>Queda quando o tempo já acabou, sem tempo para o penalty match: o adversário recebe <b>1 ponto (1,0)</b>, após confirmação dos juízes de canto.</td><td><span class=\"pg\">p. 26</span> <span class=\"pg\">p. 52</span></td></tr>\n      </table></div>"
+},
+{
+"id": "proibido",
+"cat": "faltas",
+"t": "O que é proibido",
+"s": "Lista completa do Artigo 1-8",
+"p": "27–28",
+"b": "<div class=\"tw\"><table>\n        <tr><th></th><th>Proibido</th><th>Nome</th></tr>\n        <tr><td class=\"n\">A</td><td>Rasteira aplicada <b>na articulação do joelho</b>. Bloqueio e rasteira nos membros superiores e inferiores são permitidos.</td><td>—</td></tr>\n        <tr><td class=\"n\">B</td><td>Ataque ao rosto com nuki-te (mão em lança)</td><td><button class=\"t\" data-t=\"kinshi\">Kin-shi</button></td></tr>\n        <tr><td class=\"n\">C</td><td>Ataque à base do crânio</td><td>Kin-shi</td></tr>\n        <tr><td class=\"n\">D</td><td>Ataque à garganta</td><td>Kin-shi</td></tr>\n        <tr><td class=\"n\">E</td><td>Ataque à virilha</td><td>Kin-shi</td></tr>\n        <tr><td class=\"n\">F</td><td>Agarrar sem todome-waza imediato, clinchar, empurrar ou trombar com o corpo</td><td><button class=\"t\" data-t=\"tsukami\">Tsuka-mi</button></td></tr>\n        <tr><td class=\"n\">G</td><td>Projeção ou desequilíbrio perigosos</td><td>Kin-shi</td></tr>\n        <tr><td class=\"n\">H</td><td>Ignorar totalmente o ataque iniciado pelo adversário, sem se defender</td><td><button class=\"t\" data-t=\"mushi\">Mu-shi</button></td></tr>\n        <tr><td class=\"n\">I</td><td>Atitude antidesportiva: ofensa verbal, provocação</td><td><button class=\"t\" data-t=\"fukei\">Fu-kei</button></td></tr>\n        <tr><td class=\"n\">J</td><td>Autopromoção, comemoração ou conduta imprópria na quadra</td><td>Fu-kei</td></tr>\n        <tr><td class=\"n\">K</td><td>Fingimento</td><td>—</td></tr>\n        <tr><td class=\"n\">L</td><td>Ignorar, resistir ou desobedecer o árbitro central</td><td><button class=\"t\" data-t=\"chuimushi\">Chui-mushi</button></td></tr>\n        <tr><td class=\"n\">M</td><td>Sequência descontrolada de ataques ou ataques às cegas</td><td><button class=\"t\" data-t=\"moda\">Mo-da</button></td></tr>\n        <tr><td class=\"n\">N</td><td>Qualquer outra violação ou atitude que atrapalhe a competição</td><td>—</td></tr>\n      </table></div>\n      <p>Letras A a C na <span class=\"pg\">p. 27</span>, letras D a N na <span class=\"pg\">p. 28</span>.</p>"
+},
+{
+"id": "niveis",
+"cat": "faltas",
+"t": "Níveis de penalidade",
+"s": "Kei-koku, chui, hansoku, shi-kkaku",
+"p": "28–30",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Penalidade</th><th>Quando</th><th>Se repetir</th><th>Pág.</th></tr>\n        <tr><td class=\"n\">Advertência informal</td><td>Violação muito leve ou só potencial. Não é penalidade.</td><td>Repetiu: kei-koku</td><td><span class=\"pg\">p. 53</span></td></tr>\n        <tr><td class=\"n\"><button class=\"t\" data-t=\"keikoku\">Kei-koku</button></td><td>Violação sem intenção ou acidental</td><td>2º na mesma luta: <b>chui automático</b></td><td><span class=\"pg\">p. 28</span></td></tr>\n        <tr><td class=\"n\"><button class=\"t\" data-t=\"chui\">Chui</button></td><td>Intenção clara, mas a infração não se completou</td><td>2º na mesma luta: <b>hansoku automático</b></td><td><span class=\"pg\">p. 29</span></td></tr>\n        <tr><td class=\"n\"><button class=\"t\" data-t=\"hansoku\">Hansoku</button></td><td>Cometeu um ato proibido</td><td><b>Derrota imediata</b></td><td><span class=\"pg\">p. 29</span></td></tr>\n        <tr><td class=\"n\"><button class=\"t\" data-t=\"shikkaku\">Shi-kkaku</button></td><td>Fingir lesão (decidido pelo juiz médico) ou não ter capacidade técnica de ataque e defesa (<button class=\"t\" data-t=\"muno\">mu-no</button>)</td><td>Desclassificação</td><td><span class=\"pg\">p. 30</span></td></tr>\n      </table></div>"
+},
+{
+"id": "contato",
+"cat": "faltas",
+"t": "Contato: tabela de sanções",
+"s": "Depende de como o adversário se movia",
+"p": "29–30",
+"b": "<p><b>A</b> = o adversário veio na direção da técnica (<button class=\"t\" data-t=\"deai\">de-ai</button>). <b>B</b> = ficou parado. <b>C</b> = se afastava da técnica. <span class=\"pg\">p. 29</span></p>\n      <p><b>Nada</b> = sem penalidade, e a técnica ainda pode pontuar. Tipos de contato: <b>1</b> leve, sem lesão; <b>2</b> lesão ou choque leve; <b>3</b> lesão ou choque moderado; <b>4</b> lesão ou choque pesado. <span class=\"pg\">p. 29</span></p>\n      <div class=\"tw\"><table class=\"matrix\">\n        <tr><th>Adversário</th><th>Tipo 1</th><th>Tipo 2</th><th>Tipo 3</th><th>Tipo 4</th></tr>\n        <tr><td><b>A</b> veio</td><td class=\"s-none\">Nada</td><td class=\"s-none\">Nada</td><td class=\"s-kk\">Kei-koku</td><td class=\"s-hs\">Hansoku</td></tr>\n        <tr><td><b>B</b> parado</td><td class=\"s-none\">Nada</td><td class=\"s-kk\">Kei-koku</td><td class=\"s-chui\">Chui</td><td class=\"s-hs\">Hansoku</td></tr>\n        <tr><td><b>C</b> afastava</td><td class=\"s-none\">Nada</td><td class=\"s-chui\">Chui</td><td class=\"s-hs\">Hansoku</td><td class=\"s-hs\">Hansoku</td></tr>\n      </table></div>\n      <div class=\"note\"><b>Conferir no livro:</b> as linhas B e C estão no topo da p. 30 e a foto saiu em ângulo. A ordem acima segue a sequência das células.</div>\n      <ul>\n        <li>Quem decide o tipo de contato é o <b>juiz médico</b>. <span class=\"pg\">p. 30</span></li>\n        <li>Toque na pele sem lesão nem choque não é penalizado. <span class=\"pg\">p. 30</span></li>\n        <li><b>Contato depois do Yame:</b> toque na pele = chui; contato leve ou mais = hansoku. Se a culpa for de quem recebeu ou for puro acidente, não há violação. <span class=\"pg\">p. 30</span></li>\n      </ul>"
+},
+{
+"id": "escada",
+"cat": "faltas",
+"t": "Escada de penalidades na prática",
+"s": "1ª, 2ª, 3ª e 4ª vez",
+"p": "58–59",
+"b": "<p>Fora jo-gai e ten-to, os árbitros seguem esta sequência. <span class=\"pg\">pp. 58–59</span></p>\n      <div class=\"tw\"><table>\n        <tr><th>Falta</th><th>1ª vez</th><th>2ª vez</th><th>3ª vez</th><th>4ª vez</th></tr>\n        <tr><td>Agarrar ou esquecer de cumprimentar (tsukami, fu-kei)</td><td>Advertência informal</td><td>Kei-koku</td><td>2º kei-koku, que vira chui</td><td>2º chui, que vira hansoku (decisão dos juízes)</td></tr>\n        <tr><td>Ignorar o árbitro (chui-mushi), técnicas sem controle e perigosas (mo-da, kin-shi)</td><td>Advertência informal</td><td>Kei-koku</td><td>Juízes decidem</td><td>—</td></tr>\n        <tr><td>Má atitude (fu-kei), falta de etiqueta, autopromoção</td><td>Advertência informal</td><td>Juízes decidem</td><td>—</td><td>—</td></tr>\n        <tr><td>Qualquer outra</td><td colspan=\"4\">Juízes decidem direto, sem advertência informal nem kei-koku</td></tr>\n      </table></div>"
+},
+{
+"id": "lesao",
+"cat": "faltas",
+"t": "Lesão, Doctor's Stop e desistência",
+"s": "Regra dos 5 minutos",
+"p": "30–31",
+"b": "<ul>\n        <li><b><button class=\"t\" data-t=\"doctor\">Doctor's Stop</button>:</b> lesão ou doença <b>não causada pelo adversário</b> encerra a luta se o médico prever mais de <b>5 minutos</b> de incapacidade. <span class=\"pg\">p. 31</span></li>\n        <li>Quem vencer <b>duas lutas</b> porque o adversário levou hansoku por contato sai do kumite do torneio por Doctor's Stop automático. Não vale se o hansoku veio de dois chui e só um foi por contato. <span class=\"pg\">p. 31</span></li>\n        <li>Durante o atendimento, o tempo conta 5 minutos; ao fim, o juiz médico indica Doctor's Stop. O médico pode estender em condições especiais. <span class=\"pg\">pp. 54–55</span></li>\n        <li><b><button class=\"t\" data-t=\"kiken\">Ki-ken</button> (desistência):</b> quem desiste perde a luta. Na equipe, se um desiste, a equipe inteira perde. <span class=\"pg\">p. 31</span></li>\n      </ul>"
+},
+{
+"id": "formato",
+"cat": "individual",
+"t": "Formatos de luta",
+"s": "Ippon Shobu e San-bon Shobu",
+"p": "35",
+"b": "<ul>\n        <li><b>Ippon Shobu:</b> 1min30. Vence quem fizer primeiro <b>ippon</b> ou <b>awase-waza</b> (2 waza-ari).</li>\n        <li><b>San-bon Shobu:</b> 3 sets de Ippon Shobu; vence quem ganhar 2. Intervalo de 30 s entre sets. Pontos não somam de um set para outro e penalidades não passam adiante, mas <b>hansoku em qualquer set = derrota na luta inteira</b>.</li>\n        <li><b>Sem vencedor por ippon:</b> vence quem tiver mais pontos na tabela. Empate = <button class=\"t\" data-t=\"hikiwake\">Hiki-wake</button>.</li>\n      </ul>"
+},
+{
+"id": "tab-ind",
+"cat": "individual",
+"t": "Tabela de pontos (individual)",
+"s": "Quando ninguém fez ippon",
+"p": "36–37",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Nº</th><th>Prêmio ou penalidade</th><th>Pontos</th></tr>\n        <tr><td>1</td><td>Waza-ari</td><td>4</td></tr>\n        <tr><td>2</td><td>Adversário levou chui</td><td>4</td></tr>\n        <tr><td>3</td><td>Adversário cometeu jo-gai (nota 1)</td><td>2</td></tr>\n        <tr><td>4</td><td>Adversário levou kei-koku (nota 2)</td><td>2</td></tr>\n        <tr><td>5</td><td>Adversário levou ten-to, mas não deu tempo de executar o penalty match</td><td>1</td></tr>\n        <tr><td>6</td><td>Técnica eficaz, por técnica (nota 3)</td><td>1</td></tr>\n        <tr><td>7</td><td>Espírito de luta (nota 3)</td><td>1</td></tr>\n        <tr><td>8</td><td>Etiqueta de luta (nota 3)</td><td>1</td></tr>\n      </table></div>\n      <ul>\n        <li><b>Nota 1:</b> jo-gai não dá pontos se já foi dado waza-ari por jo-gai. Um 3º jo-gai pode gerar pontos. <span class=\"pg\">p. 37</span></li>\n        <li><b>Nota 2:</b> kei-koku não dá pontos se já foi dado chui. Um 3º kei-koku pode gerar pontos. <span class=\"pg\">p. 37</span></li>\n        <li><b>Nota 3:</b> técnica eficaz, espírito de luta e etiqueta só entram no <b>kettei-sen empatado</b>, quando os juízes se reúnem para decidir. <span class=\"pg\">p. 37</span></li>\n      </ul>\n      <div class=\"note\"><b>Conferir no livro:</b> na tabela da p. 36, a linha 6 tem a marca de dois asteriscos (nota 2), mas a nota de três asteriscos na p. 37 cita \"Effective Technique\". Aqui seguimos a nota da p. 37.</div>"
+},
+{
+"id": "kettei",
+"cat": "individual",
+"t": "Kettei-sen: luta de desempate",
+"s": "Primeiro waza-ari vence",
+"p": "36",
+"b": "<ul>\n        <li>Acontece na hora, sem descanso, quando houve Hiki-wake e é preciso um vencedor. <span class=\"pg\">p. 36</span></li>\n        <li>Dura <b>1min30</b>. Vence quem fizer primeiro <b>waza-ari ou ippon</b>. <span class=\"pg\">p. 36</span></li>\n        <li>Nada passa da luta anterior: pontos e penalidades zeram. <span class=\"pg\">p. 36</span></li>\n        <li>Se terminar sem pontos ou empatado, os juízes decidem em reunião. No kettei-sen não existe Hiki-wake. <span class=\"pg\">p. 36</span> <span class=\"pg\">p. 41</span> <span class=\"pg\">p. 56</span></li>\n      </ul>"
+},
+{
+"id": "passo",
+"cat": "individual",
+"t": "Passo a passo de uma luta",
+"s": "Comandos, reverências e reunião dos juízes",
+"p": "39–42",
+"b": "<ol>\n        <li>O árbitro central chama os atletas às posições. No comando <button class=\"t\" data-t=\"rei\">Rei</button>, cumprimentam o árbitro e depois um ao outro, e ficam em shizen-tai. <span class=\"pg\">p. 39</span></li>\n        <li>Início: <button class=\"t\" data-t=\"shobuippon\">Shobu Ippon Hajime</button>. <span class=\"pg\">p. 40</span></li>\n        <li>Parada: Yame ou Jo-gai. Os atletas voltam à marca em shizen-tai. Reinício: Tsuzukete Hajime. <span class=\"pg\">p. 40</span></li>\n        <li><b>A cada anúncio do árbitro</b> (ponto, violação, penalidade), os dois atletas fazem uma leve reverência a ele, não importa a quem se refere. <span class=\"pg\">p. 40</span></li>\n        <li>Faltando 30 s: Shibaraku. A luta não para. <span class=\"pg\">p. 40</span></li>\n        <li>Fim do tempo: Yame, volta às marcas e <button class=\"t\" data-t=\"soremade\">Sore-made</button> (braço direito estendido, palma para frente). O árbitro pede o placar à mesa e anuncia o vencedor ou Hiki-wake. <span class=\"pg\">p. 41</span></li>\n        <li>Kettei-sen: começa com Kettei-sen Hajime e segue a mesma sequência. <span class=\"pg\">p. 41</span></li>\n        <li><b>Reunião dos juízes no meio da luta:</b> os atletas ficam de costas um para o outro, na sua posição, sentados em <button class=\"t\" data-t=\"seiza\">seiza</button>. Se passar de 1 minuto, voltam para as cadeiras. <span class=\"pg\">p. 42</span></li>\n        <li>Decisão por reunião: o árbitro anuncia <button class=\"t\" data-t=\"hantei\">Han-tei</button>, apito longo e curto, e os juízes de canto levantam a bandeira do vencedor. <span class=\"pg\">pp. 41–42</span></li>\n        <li>Resultado anunciado: cumprimento no Rei e saída da área. <span class=\"pg\">p. 42</span></li>\n      </ol>"
+},
+{
+"id": "eq-formato",
+"cat": "equipes",
+"t": "Formato",
+"s": "Ordem, tempo e quando a luta acaba",
+"p": "37",
+"b": "<ul>\n        <li>Cada equipe tem <b>3 atletas</b>. <span class=\"pg\">p. 37</span></li>\n        <li>Cada atleta luta 1min30 contra o atleta da outra equipe, <b>na ordem exata em que foram inscritos</b>. <span class=\"pg\">p. 37</span></li>\n        <li>A equipe com o <b>maior total de pontos</b> vence. <span class=\"pg\">p. 37</span></li>\n        <li>Cada luta acaba quando um atleta faz ippon (incluindo 2 waza-ari). As outras lutas continuam normalmente. <span class=\"pg\">p. 37</span> <span class=\"pg\">p. 43</span></li>\n      </ul>"
+},
+{
+"id": "eq-regras",
+"cat": "equipes",
+"t": "Regras que valem para o time todo",
+"s": "Hansoku, desistência e ten-to",
+"p": "37–38",
+"b": "<div class=\"key\">Se um atleta leva <b>hansoku</b>, a <b>equipe inteira</b> leva hansoku. <span class=\"pg\">p. 38</span></div>\n      <ul>\n        <li>Chui ou kei-koku de um atleta <b>não passam</b> para o próximo atleta do time. <span class=\"pg\">p. 38</span></li>\n        <li>Se um atleta desiste (ki-ken), a equipe inteira é considerada ki-ken e perde. <span class=\"pg\">p. 38</span></li>\n        <li>Ten-to marcado mas não executado porque o tempo acabou: a equipe adversária recebe 1 ponto. <span class=\"pg\">pp. 37–38</span></li>\n      </ul>"
+},
+{
+"id": "tab-eq",
+"cat": "equipes",
+"t": "Tabela de pontos (equipes)",
+"s": "Diferente da individual",
+"p": "38",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Nº</th><th>Prêmio ou penalidade</th><th>Pontos</th></tr>\n        <tr><td>1</td><td>Ippon por técnica de ippon</td><td>10</td></tr>\n        <tr><td>2</td><td>Waza-ari</td><td>4</td></tr>\n        <tr><td>3</td><td>Adversário cometeu jo-gai (cada infração)</td><td>2</td></tr>\n        <tr><td>4</td><td>Adversário levou chui</td><td>4</td></tr>\n        <tr><td>5</td><td>Adversário levou kei-koku (cada infração)</td><td>2</td></tr>\n        <tr><td>6</td><td>Adversário levou ten-to, não executado porque o tempo acabou</td><td>1</td></tr>\n        <tr><td>7</td><td>Adversário teve Doctor's Stop por lesão ou doença causada por ele mesmo</td><td>4</td></tr>\n      </table></div>\n      <p>Os registros da luta continuam valendo mesmo se um atleta tiver Doctor's Stop. <span class=\"pg\">p. 38</span></p>"
+},
+{
+"id": "eq-desempate",
+"cat": "equipes",
+"t": "Empate entre equipes",
+"s": "Kettei-sen por representante",
+"p": "39",
+"b": "<ul>\n        <li>Empate no total: cada equipe escolhe um <b>representante</b> para o kettei-sen. <span class=\"pg\">p. 39</span></li>\n        <li>O representante tem de ser um dos atletas que <b>lutaram</b> no confronto. Reservas não podem. <span class=\"pg\">p. 39</span></li>\n        <li>Os juízes decidem só pelo que aconteceu na luta de desempate. A equipe do representante vencedor ganha. <span class=\"pg\">p. 39</span></li>\n        <li>As regras são as mesmas do kettei-sen individual: 1min30, primeiro waza-ari ou ippon vence. <span class=\"pg\">p. 39</span> <span class=\"pg\">p. 36</span></li>\n      </ul>"
+},
+{
+"id": "eq-passo",
+"cat": "equipes",
+"t": "Passo a passo do confronto",
+"s": "Alinhamento e troca imediata de atleta",
+"p": "42–44",
+"b": "<p>A sequência é a mesma da luta individual, com estas diferenças: <span class=\"pg\">p. 43</span></p>\n      <ol>\n        <li>Antes do confronto, as equipes se alinham nas linhas laterais opostas, à direita e à esquerda da mesa principal. No Rei, se cumprimentam e voltam às cadeiras. <span class=\"pg\">p. 43</span></li>\n        <li>Cada luta começa com Hajime e dura 1min30, ou até um lado fazer ippon (incluindo 2 waza-ari). <span class=\"pg\">p. 43</span></li>\n        <li>No fim de cada luta, o árbitro diz Sore-made e <b>a próxima começa imediatamente</b>. O próximo atleta precisa estar pronto, de luva e protetor bucal. <span class=\"pg\">p. 43</span></li>\n        <li>Depois da última luta, as equipes se alinham de novo, o árbitro declara a equipe vencedora, cumprimento no Rei e saída. <span class=\"pg\">p. 43</span></li>\n        <li>Empate: o árbitro anuncia Hiki-wake, as equipes <b>não</b> se alinham e ele pede um representante de cada time. O kettei-sen por representante vem logo em seguida. <span class=\"pg\">pp. 43–44</span></li>\n      </ol>"
+},
+{
+"id": "uniforme",
+"cat": "equipamento",
+"t": "Karate-gi e faixa",
+"s": "Comprimentos exigidos",
+"p": "34",
+"b": "<ul>\n        <li>Karate-gi <b>branco</b>, no padrão do Comitê Técnico (Apêndice XXI).</li>\n        <li><b>Paletó:</b> chega até a região da virilha, sem cobrir os joelhos. Mangas cobrem o cotovelo, mas não o punho.</li>\n        <li><b>Calça:</b> cobre os joelhos, mas não os tornozelos.</li>\n        <li>Mangas e calça <b>não podem ser dobradas</b>.</li>\n        <li><b>Faixa:</b> amarrada na cintura, entre o fim das costelas e acima do osso do quadril. As pontas não podem passar dos joelhos.</li>\n        <li>O atleta do lado <button class=\"t\" data-t=\"aka\">Aka</button> (vermelho) usa faixa vermelha.</li>\n        <li>Mulheres usam camiseta por baixo do paletó.</li>\n      </ul>"
+},
+{
+"id": "protecao",
+"cat": "equipamento",
+"t": "Equipamento de segurança",
+"s": "Obrigatório, opcional e proibido",
+"p": "34–35",
+"b": "<div class=\"tw\"><table>\n        <tr><th>Item</th><th>Regra</th><th>Pág.</th></tr>\n        <tr><td>Luva de punho</td><td><b>Obrigatória</b>. Só modelos oficiais aprovados pela WTKU.</td><td><span class=\"pg\">p. 34</span></td></tr>\n        <tr><td>Protetor bucal</td><td><b>Obrigatório</b>.</td><td><span class=\"pg\">p. 34</span></td></tr>\n        <tr><td>Coquilha (plástico ou metal)</td><td>Opcional</td><td><span class=\"pg\">p. 34</span></td></tr>\n        <tr><td>Top esportivo (mulheres)</td><td>Opcional</td><td><span class=\"pg\">p. 34</span></td></tr>\n        <tr><td>Faixa de neoprene ou elástica</td><td><b>Proibida</b></td><td><span class=\"pg\">p. 34</span></td></tr>\n        <tr><td>Esparadrapo</td><td>Só com aprovação do juiz médico da WTKU, no máximo <b>2 voltas</b></td><td><span class=\"pg\">p. 34</span></td></tr>\n        <tr><td>Óculos e lentes de contato</td><td><b>Proibidos</b>. Exceção: lente gelatinosa, com aprovação médica</td><td><span class=\"pg\">p. 35</span></td></tr>\n      </table></div>"
+},
+{
+"id": "juizes",
+"cat": "arbitragem",
+"t": "Quem julga e como vota",
+"s": "Shu-shin, fuku-shin e kan-sa",
+"p": "44–47",
+"b": "<ul>\n        <li>Cada quadra tem 1 <button class=\"t\" data-t=\"shushin\">shu-shin</button> (árbitro central) e 4 <button class=\"t\" data-t=\"fukushin\">fuku-shin</button> (juízes de canto). <span class=\"pg\">p. 44</span></li>\n        <li>O <button class=\"t\" data-t=\"kansa\">kan-sa</button> supervisiona a quadra: corrige violações das regras pelo árbitro central, controla tempo e registro e recebe os protestos. <b>Não vota.</b> <span class=\"pg\">pp. 45–46</span></li>\n        <li>Decisões por maioria: shu-shin tem <b>2 votos</b>, cada fuku-shin tem <b>1</b>. Em empate, decide a maioria dos fuku-shin. <span class=\"pg\">p. 46</span></li>\n        <li>Fuku-shin que não viu a ação não participa daquela decisão. <span class=\"pg\">p. 46</span></li>\n        <li>Casos de grande controvérsia vão ao júri, cuja decisão é final e irrevogável. <span class=\"pg\">p. 46</span></li>\n        <li>Se um fuku-shin sinaliza ponto, o árbitro pode ignorar. Se dois ou mais sinalizam, ele tem de parar a luta. Emergência, violação ou jo-gai sinalizado por um só já obriga a parar. <span class=\"pg\">p. 57</span></li>\n        <li>Só o árbitro central para a luta. Ataque feito depois da ordem de parar não vale, mesmo eficaz. <span class=\"pg\">p. 57</span></li>\n      </ul>"
+},
+{
+"id": "parada",
+"cat": "arbitragem",
+"t": "Quando o árbitro interrompe a luta",
+"s": "Inclui a regra dos 10 segundos",
+"p": "48–49",
+"b": "<ol type=\"A\">\n        <li>Vai dar ippon ou waza-ari, ou dois ou mais juízes de canto sinalizam ponto.</li>\n        <li>Um ou os dois atletas saem da área.</li>\n        <li>Trocam técnicas sem ponto e param, ou há confusão.</li>\n        <li>Técnica e contra-ataque, um de cada, e nenhum vira ponto.</li>\n        <li>Um agarra ou clincha o outro.</li>\n        <li>Contato de corpo (fora braços e pernas) que trava a continuação.</li>\n        <li>Queda sem continuação, ou técnica que continua mas não vira ponto.</li>\n        <li>Empurram com força ou trombam.</li>\n        <li><b>Luta travada por 10 segundos sem troca de técnicas eficazes.</b> <span class=\"pg\">p. 49</span></li>\n        <li>Roupa desarrumada atrapalhando o movimento.</li>\n        <li>Violação das regras.</li>\n        <li>Atletas exaltados ou clima que pode levar a violação.</li>\n        <li>Lesão ou doença.</li>\n        <li>Interferência externa.</li>\n        <li>Violação das regras de operação da competição.</li>\n        <li>Aviso do kan-sa para parar.</li>\n        <li>Emergência.</li>\n      </ol>\n      <p>Itens A a H na <span class=\"pg\">p. 48</span>, itens I a Q na <span class=\"pg\">p. 49</span>.</p>"
+},
+{
+"id": "ponto",
+"cat": "arbitragem",
+"t": "Como o ponto é dado",
+"s": "Rosto = ippon, cintura = waza-ari",
+"p": "49–51",
+"b": "<ul>\n        <li>O árbitro para a luta, todos voltam às posições e ele aponta a mão aberta para quem pontuou: <b>na altura do rosto = ippon</b>, <b>na altura da cintura = waza-ari</b>. Depois confirma com os juízes de canto. <span class=\"pg\">pp. 49–50</span></li>\n        <li>Se o árbitro não viu e dois ou mais juízes de canto sinalizam ponto, ele para e confirma. Maioria confirma = ponto. Sem maioria = <button class=\"t\" data-t=\"toranai\">Tora-nai</button> (nulo). <span class=\"pg\">p. 50</span></li>\n        <li>Juiz de canto que não viu o alvo pode indicar <button class=\"t\" data-t=\"tekikaku\">teki-kaku</button>: técnica, posição e timing corretos. Só conta se o árbitro confirmar que chegou ao alvo. <span class=\"pg\">p. 50</span></li>\n        <li>Se discordar da maioria, o árbitro pode pedir <button class=\"t\" data-t=\"saishinpan\">Sai-shinpan</button> (rejulgamento). A decisão do rejulgamento é final. <span class=\"pg\">p. 51</span></li>\n      </ul>"
+},
+{
+"id": "protesto",
+"cat": "arbitragem",
+"t": "Protesto do técnico",
+"s": "O que pode e o que não pode",
+"p": "31–32",
+"b": "<ul>\n        <li>O técnico só protesta ao <b>kan-sa</b>, e só alegando que a operação da luta violou as regras. Nunca direto aos juízes. <span class=\"pg\">pp. 31–32</span></li>\n        <li>Não pode protestar decisão dos juízes nem decisão médica tomadas com base nas regras. <span class=\"pg\">p. 31</span></li>\n        <li>Tem de protestar <b>antes</b> de qualquer atleta sair da quadra, e sinalizar antes da saída para o kan-sa segurar os atletas na área. <span class=\"pg\">p. 32</span></li>\n        <li>Explicação de no máximo 5 minutos. A decisão é final. Técnico que insistir pode ser expulso da área. <span class=\"pg\">p. 32</span></li>\n      </ul>"
+},
+{
+"id": "chaves",
+"cat": "arbitragem",
+"t": "Chaves e sorteio",
+"s": "Eliminação simples e repescagem",
+"p": "32–33",
+"b": "<ul>\n        <li>Eliminação simples (Apêndice IV). A organização pode trocar por repescagem: a disputa do 3º lugar sai entre os que perderam para os finalistas (Apêndice V). <span class=\"pg\">p. 32</span></li>\n        <li>Os vencedores da edição anterior do mesmo torneio podem ser cabeças de chave do 1º ao 4º lugar. <span class=\"pg\">p. 33</span></li>\n        <li>O resto das posições é por sorteio aberto. <span class=\"pg\">p. 33</span></li>\n      </ul>"
+}
+];
+const ESSENTIALS = [
+{
+"to": "naopontua",
+"t": "Defenda antes de contra-atacar",
+"x": "Se o adversário iniciou o ataque, contra-ataque sem cobrir, bloquear ou esquivar antes não pontua e leva mu-shi.",
+"p": "15"
+},
+{
+"to": "jogai",
+"t": "2º jo-gai vira waza-ari do adversário",
+"x": "Sair da área duas vezes na mesma luta dá waza-ari para o outro lado.",
+"p": "24"
+},
+{
+"to": "penalty",
+"t": "Caiu? Vem o penalty match",
+"x": "Queda sem ponto gera ten-to: quem caiu vai para a linha do fundo e só contra-ataca depois de defender.",
+"p": "25–27"
+},
+{
+"to": "tsuki",
+"t": "Kizami-zuki só no rosto",
+"x": "O soco da mão da frente só vale com alvo jodan.",
+"p": "17"
+},
+{
+"to": "uchi",
+"t": "Uchi só no rosto",
+"x": "Golpes uchi, como ura-ken, só pontuam em jodan. No corpo não valem.",
+"p": "18"
+},
+{
+"to": "frente",
+"t": "Lado da frente = no máximo waza-ari",
+"x": "Técnica da perna da frente ou da mão do lado da perna da frente nunca vira ippon direto.",
+"p": "15–16"
+},
+{
+"to": "maai",
+"t": "Distância decide o ponto",
+"x": "Rosto até ~5 cm, corpo até ~3 cm, chute até 5 cm. Se não alcança o alvo, não há ponto.",
+"p": "14–15"
+},
+{
+"to": "proibido",
+"t": "Rasteira no joelho é proibida",
+"x": "Rasteira e bloqueio nos membros são permitidos, mas na articulação do joelho não.",
+"p": "27"
+},
+{
+"to": "proibido",
+"t": "Agarrar sem finalizar é falta",
+"x": "Agarrar sem golpe imediato, clinchar, empurrar ou trombar: tsuka-mi.",
+"p": "28"
+},
+{
+"to": "proibido",
+"t": "Não comemore na quadra",
+"x": "Autopromoção, comemoração e provocação são falta (fu-kei).",
+"p": "28"
+},
+{
+"to": "contato",
+"t": "Contato depois do yame",
+"x": "Toque na pele: chui. Contato leve ou mais forte: hansoku.",
+"p": "30"
+},
+{
+"to": "niveis",
+"t": "Fingir lesão desclassifica",
+"x": "Se o juiz médico concluir que é fingimento: shi-kkaku.",
+"p": "30"
+},
+{
+"to": "tempo",
+"t": "Depois do sinal não vale",
+"x": "Técnica junto com o sinal de fim conta. Depois dele não conta, mesmo sem o yame.",
+"p": "23"
+},
+{
+"to": "parada",
+"t": "10 segundos travados",
+"x": "Se a luta trava 10 s sem troca de técnicas eficazes, o árbitro interrompe.",
+"p": "49"
+},
+{
+"to": "passo",
+"t": "Reverência a cada anúncio",
+"x": "A cada ponto ou penalidade anunciada, os dois atletas fazem uma leve reverência ao árbitro.",
+"p": "40"
+},
+{
+"to": "eq-regras",
+"t": "Na equipe, um erro custa o time",
+"x": "Hansoku de um atleta é hansoku da equipe. Se um desistir, a equipe perde.",
+"p": "38"
+},
+{
+"to": "protecao",
+"t": "Equipamento obrigatório",
+"x": "Luva oficial WTKU e protetor bucal. Sem óculos e sem joelheira de neoprene.",
+"p": "34–35"
+}
+];
+const G = {
+  aka:["Aka","Vermelho. Um dos lados da luta; o atleta Aka usa faixa vermelha.","34","uniforme"],
+  shiro:["Shiro","Branco. O outro lado da luta.","34","uniforme"],
+  shushin:["Shu-shin","Árbitro central. Comanda a luta com termos e sinais e tem 2 votos.","44–47","juizes"],
+  fukushin:["Fuku-shin","Juízes de canto (4 por quadra). Sinalizam com bandeira e apito; 1 voto cada.","44–47","juizes"],
+  kansa:["Kan-sa","Supervisor da quadra. Fiscaliza as regras, o tempo e o registro e recebe protestos. Não vota.","45–46","juizes"],
+  hajime:["Hajime","\"Comecem\". Inicia o tempo de ação.","23, 40","tempo"],
+  shobuippon:["Shobu Ippon Hajime","Comando de início da luta.","40","passo"],
+  yame:["Yame","\"Parem\". Para o tempo; os atletas voltam às marcas.","23, 40","tempo"],
+  tsuzukete:["Tsuzukete Hajime","\"Continuem\". Reinicia a luta depois de uma parada.","40","tempo"],
+  soremade:["Sore-made","Fim da luta. O árbitro estende o braço direito com a palma para frente.","41","passo"],
+  shibaraku:["Shibaraku","Aviso de que faltam 30 segundos. A luta não para.","40","som"],
+  rei:["Rei","Cumprimento (reverência) no início e no fim.","39","passo"],
+  hantei:["Han-tei","Decisão dos juízes, anunciada com apito longo e curto.","41–42","passo"],
+  hikiwake:["Hiki-wake","Empate. Não existe no kettei-sen.","35, 41","formato"],
+  ketteisen:["Kettei-sen","Luta de desempate de 1min30. Vence o primeiro waza-ari ou ippon.","36","kettei"],
+  ippon:["Ippon","Ponto cheio: técnica que neutralizaria o adversário.","12","ippon"],
+  wazaari:["Waza-ari","Meio ponto: técnica eficaz um pouco abaixo do ippon.","14–15","wazaari"],
+  awase:["Awase-waza / Awasete Ippon","Dois waza-ari somados valem ippon.","35","wazaari"],
+  todome:["Todome-waza","Golpe finalizador: execução correta, timing, distância e alvo válido.","11–12","ippon"],
+  kime:["Kime","Energia máxima no impacto: pressão no chão e contração total e rápida.","12","ippon"],
+  zanshin:["Zanshin","Manter o equilíbrio mental e físico logo depois da técnica.","13","ippon"],
+  kyo:["Kyo","Momento em que o adversário está desligado, mental ou fisicamente. É a hora certa de atacar.","13","timing"],
+  maai:["Ma-ai","Distância eficaz. Rosto até ~5 cm, corpo até ~3 cm, chute até 5 cm.","14","maai"],
+  sen:["Sen","Iniciativa que antecipa o movimento do adversário. Chute em sen contra mão, com alcance superior, é a exceção da regra do contra-ataque.","15","naopontua"],
+  yoshi:["Yoshi","Promoção do ponto (waza-ari para ippon). Também é o sinal de timing muito bom.","16","yoshi"],
+  jogai:["Jo-gai","Saída da área. Duas saídas na luta dão waza-ari ao adversário.","24","jogai"],
+  tento:["Ten-to","Queda sem ponto. Gera o penalty match.","25","tento"],
+  sagaru:["Sagaru","\"Para trás\". Manda quem caiu para a linha do fundo no penalty match.","52","penalty"],
+  ikkai:["Ikkai","Primeira vez (1º jo-gai, kei-koku ou chui). Indicador levantado.","51","jogai"],
+  nikai:["Nikai","Segunda vez. Indicador e médio levantados.","51","jogai"],
+  keikoku:["Kei-koku","Nota: penalidade por violação sem intenção. O 2º vira chui.","28","niveis"],
+  chui:["Chui","Advertência: intenção clara, infração não completada. O 2º vira hansoku.","29","niveis"],
+  hansoku:["Hansoku","Falta: ato proibido. Derrota imediata.","29","niveis"],
+  shikkaku:["Shi-kkaku","Desclassificação. Ex.: fingir lesão.","30","niveis"],
+  kiken:["Ki-ken","Desistência. Na equipe, a equipe inteira perde.","31","lesao"],
+  mushi:["Mu-shi","Ignorar o ataque do adversário sem se defender.","15, 28","naopontua"],
+  muno:["Mu-no","Falta de capacidade de executar técnicas de ataque e defesa. Leva a shi-kkaku.","30","niveis"],
+  kinshi:["Kin-shi","Técnica ou alvo proibido e perigoso.","27–28","proibido"],
+  tsukami:["Tsuka-mi","Agarrar, clinchar, empurrar ou trombar.","15, 28","proibido"],
+  fukei:["Fu-kei","Má atitude: provocação, comemoração, autopromoção.","28","proibido"],
+  chuimushi:["Chui-mushi","Ignorar ou desobedecer o árbitro central.","28","proibido"],
+  moda:["Mo-da","Sequência descontrolada de ataques, ataques às cegas.","28","proibido"],
+  deai:["De-ai","O adversário vem na direção da técnica. Reduz a penalidade por contato.","29","contato"],
+  nige:["Nige","Técnica com o corpo fugindo para o lado oposto. Não pontua.","15","naopontua"],
+  tekikaku:["Teki-kaku","Técnica correta indicada por juiz de canto que não viu o alvo. Só conta se o árbitro confirmar.","50","ponto"],
+  toranai:["Tora-nai","Nulo: sem ponto nem penalidade.","50","ponto"],
+  saishinpan:["Sai-shinpan","Rejulgamento pedido pelo árbitro central. Decisão final.","51","ponto"],
+  doctor:["Doctor's Stop","Fim da luta por lesão ou doença com previsão de mais de 5 minutos.","31","lesao"],
+  shizentai:["Shizen-tai","Base natural, de pé, pernas afastadas.","26, 39","penalty"],
+  seiza:["Seiza","Sentado de joelhos sobre os calcanhares. Posição durante a reunião dos juízes.","42","passo"],
+  jodan:["Jodan","Rosto: das sobrancelhas ao topo das orelhas e em volta do queixo.","22","alvos"],
+  chudan:["Chudan","Da cintura até a linha de axila a axila, sem a lateral do corpo.","22","alvos"]
+};
+const SS = [
+[1,"O","Shobu Ippon, Hajime","Início da luta","Só verbal."],
+[2,"O","Yame","Parada temporária","Mãos abertas acima da cabeça, palmas de lado, descendo até a cintura num só movimento."],
+[3,"O","Motono-ichi","Atletas às posições","Braços para baixo, um pouco à frente, indicadores apontando para a marca de cada atleta."],
+[4,"O","Tsuzukete, Hajime","Continuem, comecem","Braços abertos para os lados, palmas abertas, trazidos como se fosse bater palma, sem encostar."],
+[5,"O","Tsuzukete","Continuem (quando a parada não foi do árbitro)","Braços meio abertos, cotovelos levemente dobrados, trazidos sem encostar as palmas."],
+[6,"D","Waza-ari","Declaração de waza-ari","Mão aberta para o lado que pontuou; sinais do alvo e da técnica ou de dois jo-gai; mão vai até o ombro oposto e desce em diagonal, palma para frente."],
+[7,"D","Ippon","Declaração de ippon","Mão aberta para o lado que pontuou; sinais do alvo e da técnica ou de dois waza-ari; mão sobe do quadril oposto em diagonal até acima do ombro."],
+[8,"D","Awasete, Ippon","Dois waza-ari declarados como ippon","Aviso dos dois waza-ari e depois o mesmo sinal do ippon (nº 7)."],
+[9,"J","Sai-shinpan","Rejulgamento","Vários apitos curtos; palma direita sobre o peito esquerdo; explicação por sinais; julgamento por sinais; apito longo e um curto; após confirmar, apito curto e bandeiras abaixadas."],
+[10,"O","Shibaraku","Faltam 30 segundos","Só verbal."],
+[11,"O","Sore-made","Fim da luta","Braço estendido à frente, palma aberta para frente."],
+[12,"I","Jo-gai, Nakae","Atletas fora da área","Mesmo sinal do Yame (nº 2) e depois gesto mandando os atletas voltarem para dentro."],
+[13,"N","Aka (Shiro), Jo-gai","Aviso de jo-gai","Indicador para o atleta e depois para a linha da quadra."],
+[14,"I","Ikkai","Primeiro jo-gai, kei-koku ou chui","Indicador levantado na direção do atleta."],
+[15,"I","Nikai","Segundo jo-gai, kei-koku ou chui","Indicador e médio levantados na direção do atleta."],
+[16,"I","Aka (Shiro), Ten-to","Indicação de queda","Indicador para o atleta, um círculo grande e depois aponta para o chão."],
+[17,"P","Sagaru","Execução do penalty match","Indicador mandando o atleta direto para trás, até a linha do fundo."],
+[18,"P","Aka (Shiro), Kei-koku","Aviso de kei-koku","Mão aberta para o penalizado; sinal do motivo; indicador levantado."],
+[19,"P","Aka (Shiro), Chui","Aviso de chui","Mão aberta para o penalizado; sinal do motivo; cotovelo dobrado e indicador apontado para o peito do atleta."],
+[20,"P","Aka (Shiro), Han-soku","Aviso de hansoku","Mão aberta para o penalizado; sinal do motivo; braço esticado, indicador na altura do rosto do atleta."],
+[21,"P","Aka (Shiro), Shi-kkaku","Aviso de desclassificação","Indicador para o penalizado; sinal do motivo; indicador para cima a 45°, braço esticado, apontando para trás do atleta."],
+[22,"P","Aka (Shiro), Mu-no","Sem capacidade de competir","Mão aberta para o penalizado; mãos abertas cruzadas em X na frente do peito."],
+[23,"N","Aka (Shiro), Doctor's Stop","Aviso de Doctor's Stop","Mão aberta para o atleta; um braço vertical e outro horizontal formando cruz no peito; depois mão desce da cabeça como no Yame."],
+[24,"N","Aka (Shiro), Ki-ken","Aviso de desistência","Mão aberta para o atleta; as duas palmas para frente, cotovelos dobrados, mãos na altura da cabeça."],
+[25,"D","... Ni-Yori, ... No-Kachi","Vitória por shi-kkaku, hansoku, ki-ken ou Doctor's Stop do adversário","Depois da explicação, mesmo sinal do ippon (nº 7)."],
+[26,"I","—","Emergência (violação, doença, outras)","Mão aberta estendida acima da cabeça, em movimento circular."],
+[27,"O","Doctor","Chamar o médico","As duas mãos acima da cabeça, cruzando."],
+[28,"J","Fuku-shin, Shu-go","Chamar os juízes de canto","Braços esticados, palmas para cima, dobrando os cotovelos até as palmas ficarem para trás."],
+[29,"J","Fuku-shin","Chamar um juiz de canto específico","Indicador para o juiz; um braço esticado, palma para cima, dobrando o cotovelo."],
+[30,"J","Han-tei","Pedido de julgamento","Apito longo e um curto para pedir os votos; apito curto para baixar as bandeiras."],
+[31,"D","Aka (Shiro) no Kachi","Vitória de Aka (Shiro)","Mesmo sinal do ippon (nº 7)."],
+[32,"J","Hiki-wake","Empate","Mãos com palmas de lado cruzam nos ombros e descem cruzando, palmas para frente."],
+[33,"O","Kettei-sen, Hajime","Início do desempate","Só verbal."],
+[34,"J","Tora-nai","Nulo: sem ponto ou penalidade","Braços esticados à frente, apontando para baixo até a cintura, palmas para baixo, cruzando."],
+[35,"E","Yowai","Técnica fraca","Braço esticado à frente, palma para baixo, descendo até a cintura."],
+[36,"E","Uke","Técnica bloqueada ou coberta","Um braço vertical dobrado no peito; a palma da outra mão bate uma vez no antebraço."],
+[37,"E","Nuke","Fora do alvo","Braço dobrado em ângulo reto, punho passando de leve pela barriga."],
+[38,"E","Ma-ai Toh-ma","Distância: não alcançou","Braços à frente, palmas a ~15 cm uma da outra, depois abrem até a largura dos ombros."],
+[39,"E","Ma-ai Chika-ma","Distância: perto demais","Braços à frente na largura dos ombros, depois se aproximam até ~15 cm."],
+[40,"E","Osoi","Timing ruim","Antebraços paralelos à frente, girando rápido um em volta do outro."],
+[41,"E","Ai-uchi","Ataque simultâneo","Braços à frente, paralelos, cotovelos dobrados, punhos quase se tocando."],
+[42,"E","Tachi","Base fraca","Pontas dos dedos se tocando na frente do peito, formando um triângulo."],
+[43,"E","Snap back","Técnica de mão com recolhida (snap back)","Estende o punho e recolhe com estalo."],
+[44,"E","Furi-uchi","Golpe sem estalo","Punho fechado, cotovelo esticado, balança o braço de um lado para o outro."],
+[45,"E","Furi-geri","Chute sem estalo ou sem penetração do joelho","Punho fechado, braço esticado balançando do quadril até acima da cabeça."],
+[46,"E","Oshi","Técnica empurrada","Palma para frente, dedos para cima, empurrando."],
+[47,"E","Nige-Tsuki / Uchi / Ate / Geri","Técnica com o corpo fugindo para o lado oposto","Um braço balança uma vez do lado do corpo para frente e para trás."],
+[48,"E","Fu-teki","Parte do corpo errada para golpear","Palma aberta sobre o dorso da outra mão."],
+[49,"E","Aka (Shiro) Hayai","Técnica mais rápida","Um braço todo dobrado, palma para cima; o outro braço, do lado mais rápido, cruza com a palma reta encostando no cotovelo."],
+[50,"E","Tsuka-mi","Agarrar ou clinchar","Mão aberta estendida que se fecha num gesto de agarrar."],
+[51,"E","Ate","Contato","Punho encostando na lateral do rosto."],
+[52,"E","Kin-shi","Contato proibido ou perigoso","Mão aberta, palma para baixo, dedos juntos, empurrando na direção da garganta."],
+[53,"E","Mu-shi","Técnica ignorada","Uma mão cobrindo os olhos."],
+[54,"E","Chui Mu-shi","Ignorou o aviso do árbitro","Palmas abertas cobrindo as duas orelhas."],
+[55,"E","Fu-kei","Má atitude","Mão aberta, palma para frente, de um lado para o outro."],
+[56,"E","Doji","Ação simultânea com o fim do tempo, jo-gai ou ten-to","Braços à frente na altura dos ombros e uma palma só."],
+[57,"E","Ato","Depois do fato (técnica após Yame, jo-gai etc.)","Braços dobrados, palmas paralelas na altura da cabeça."],
+[58,"E","Yoshi","Timing muito bom","Braço estendido à frente fazendo um círculo."],
+[59,"E","Mo-da","Ataques descontrolados","Uma mão sobre os olhos e a outra em punho, braço à frente na altura da barriga."],
+[60,"E","Pressure","Pressão fraca no chão na técnica final","Braços paralelos ao chão, uma palma para cima e outra para baixo na frente da barriga; a de cima bate na de baixo."]
+];
+const FS = [
+[1,"J","Waza-ari","Waza-ari","Bandeira do atleta esticada ao lado do corpo, paralela ao chão, e um apito curto."],
+[2,"J","Ippon","Ippon","Bandeira do atleta esticada para cima a 45° e um apito curto."],
+[3,"J","Teki-kaku","Técnica válida (sem ver o alvo)","Bandeira de waza-ari ou ippon e a outra cobrindo os olhos, com um apito."],
+[4,"J","Tora-nai","Sem ponto nem penalidade","Bandeiras cruzando na frente, logo acima dos joelhos, com vários apitos curtos."],
+[5,"J","Mie-nai","Não viu","As duas bandeiras cruzadas cobrindo os olhos."],
+[6,"J","Jo-gai","Saída da área","Apito curto e bandeira do atleta apontada para baixo. Saída simultânea: as duas bandeiras para baixo."],
+[7,"J","Ten-to","Queda","Apitos curtos, bandeira apontada para o atleta, um círculo grande e depois para o chão."],
+[8,"O","Emergência","Violação, lesão, doença ou outra emergência","Vários apitos curtos contínuos, com a bandeira do atleta acima da cabeça."],
+[9,"O","Doctor","Pedir o médico","Bandeiras cruzadas acima da cabeça."],
+[10,"E","Ate","Contato","Ponta da bandeira encostando na lateral do rosto."],
+[11,"E","Chui Mu-shi","Ignorou o aviso do árbitro","As duas bandeiras cobrindo as orelhas."],
+[12,"E","Kin-shi","Ação proibida ou perigosa","Ponta da bandeira levada na direção da garganta."],
+[13,"E","Mu-no","Sem capacidade de competir","Bandeiras cruzando os braços na frente do peito."],
+[14,"E","Fu-kei","Má atitude","Bandeira com o cotovelo em ângulo reto na frente do corpo, de um lado para o outro."],
+[15,"E","Mu-shi","Técnica ignorada","Bandeira do atleta cobrindo os olhos."],
+[16,"E","Tsuka-mi","Agarrar ou clinchar","As duas bandeiras numa mão; a outra mão agarra as duas."],
+[17,"J","Aka (Shiro) no Kachi","Vencedor","Mesmo sinal do ippon (nº 2), sem apito."],
+[18,"J","Hiki-wake","Empate","As duas bandeiras cruzadas acima da cabeça."],
+[19,"E","Yowai","Técnica fraca","Braço esticado à frente, paralelo ao chão na cintura, descendo na direção dos joelhos."],
+[20,"E","Uke","Técnica bloqueada ou coberta","Uma bandeira para cima com o cotovelo junto ao corpo; a outra de lado vai encostar nela."],
+[21,"E","Nuke","Fora do alvo","Braço em ângulo reto, bandeira passando pela barriga."],
+[22,"E","Ma-ai Toh-ma","Distância: não alcançou","Bandeiras à frente a ~15 cm, depois abrem até a largura dos ombros."],
+[23,"E","Ma-ai Chika-ma","Distância: perto demais","Bandeiras à frente na largura dos ombros, depois se aproximam até ~15 cm."],
+[24,"E","Osoi","Timing ruim","Uma bandeira em cada mão, braços paralelos girando rápido um em volta do outro."],
+[25,"E","Ai-uchi","Ataque simultâneo","Bandeiras à frente na cintura, cotovelos dobrados, pontas se tocando."],
+[26,"E","Tachi","Base fraca","Bandeiras na frente do peito formando triângulo."],
+[27,"E","Snap-back","Técnica de mão com recolhida","Bandeira sai do peito para frente num gesto de soco com estalo."],
+[28,"E","Furi-Uchi","Golpe sem estalo","Bandeira esticada à frente e depois balançando para o lado na altura do ombro."],
+[29,"E","Furi-Geri","Chute sem estalo ou sem penetração","Braço esticado com a bandeira balançando de baixo para cima."],
+[30,"E","Oshi","Técnica empurrada","Bandeira na vertical e depois empurrada para fora do corpo."],
+[31,"E","Nige","Técnica com o corpo fugindo","Bandeira numa mão, braço à frente e depois balança uma vez para trás por cima do ombro."],
+[32,"E","Fu-teki","Parte do corpo errada","Bandeira batendo no dorso da outra mão."],
+[33,"E","Hayai","Técnica mais rápida","Um braço todo dobrado junto ao corpo, palma para cima; o outro cruza e a ponta da bandeira encosta na outra bandeira."],
+[34,"E","Doji","Simultâneo com fim do tempo ou jo-gai","Braços à frente na altura dos ombros, bandeiras se juntam uma vez, como uma palma."],
+[35,"E","Ato","Depois do fato (após Yame, jo-gai etc.)","Uma bandeira em cada mão, braços dobrados para cima, palmas paralelas na altura da cabeça."],
+[36,"E","Yoshi","Timing muito bom","Bandeira do atleta à frente do corpo, fazendo círculo com a ponta."],
+[37,"E","Mo-da","Ataques descontrolados","Uma bandeira cobre os olhos e a outra fica à frente na altura da barriga."],
+[38,"E","Pressure","Pressão fraca no chão na técnica final","Uma bandeira paralela ao chão na frente da barriga; a outra, do lado da técnica, bate nela de cima."]
+];
+
+
+/* ---------- Ícones (estilo Lucide, contorno 1,6) ---------- */
+const I = {
+  home:'<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/>',
+  book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+  user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  right:'<path d="m9 18 6-6-6-6"/>',
+  left:'<path d="m15 18-6-6 6-6"/>',
+  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
+  text:'<path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+  star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  phone:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>'
+};
+const ic = (n,c='') => '<svg class="i '+c+'" viewBox="0 0 24 24" aria-hidden="true">'+I[n]+'</svg>';
+
+/* ---------- Categorias ---------- */
+const CATS = {
+  essenciais:{name:'Essencial para competir', desc:'As regras que mais tiram ponto ou luta', tab:'home'},
+  pontos:{name:'Pontuação', desc:'Ippon, waza-ari, timing e distância', tab:'regras'},
+  tecnicas:{name:'Técnicas', desc:'Soco, golpe, cotovelada, joelhada e chutes', tab:'regras'},
+  faltas:{name:'Faltas e penalidades', desc:'Proibições, kei-koku, chui, hansoku e contato', tab:'regras'},
+  saida:{name:'Saída e queda', desc:'Jo-gai, ten-to e o penalty match', tab:'regras'},
+  tempo:{name:'Tempo de luta', desc:'Quando o tempo corre e os sinais sonoros', tab:'regras'},
+  geral:{name:'Área e alvos', desc:'Definição, quadra de 8 m e alvos válidos', tab:'regras'},
+  equipamento:{name:'Uniforme e equipamento', desc:'Karate-gi, luva e protetor bucal', tab:'regras'},
+  arbitragem:{name:'Arbitragem', desc:'Juízes, interrupções, protesto e chaves', tab:'regras'},
+  individual:{name:'Kumite individual', desc:'Formato, pontos, desempate e passo a passo', tab:'individual'},
+  equipes:{name:'Kumite por equipes', desc:'Formato, regras do time, pontos e desempate', tab:'equipes'}
+};
+const GERAIS = ['pontos','tecnicas','faltas','saida','tempo','geral','equipamento','arbitragem'];
+const CAT_LABEL = {O:"Operação da luta",D:"Declaração de pontos",J:"Julgamento",N:"Aviso",I:"Indicação",P:"Penalidade",E:"Explicação"};
+
+/* Quadra desenhada em escala (8 m; marcas a 1,5 m do centro), p. 11 */
+const COURT = '<figure class="court"><svg viewBox="0 0 240 236" role="img" aria-label="Quadra quadrada de 8 metros com as marcas dos atletas a 1,5 metro de cada lado do centro">'
+ +'<rect x="30" y="16" width="180" height="180" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>'
+ +'<line x1="86" y1="100" x2="86" y2="112" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>'
+ +'<line x1="154" y1="100" x2="154" y2="112" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>'
+ +'<circle cx="120" cy="106" r="2.5" fill="var(--muted)"/>'
+ +'<line x1="120" y1="124" x2="154" y2="124" stroke="var(--muted)" stroke-dasharray="3 3"/>'
+ +'<text x="137" y="140" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="inherit">1,5 m</text>'
+ +'<text x="86" y="92" text-anchor="middle" font-size="11" fill="var(--text)" font-family="inherit">atleta</text>'
+ +'<text x="154" y="92" text-anchor="middle" font-size="11" fill="var(--text)" font-family="inherit">atleta</text>'
+ +'<line x1="30" y1="212" x2="210" y2="212" stroke="var(--muted)"/><line x1="30" y1="207" x2="30" y2="217" stroke="var(--muted)"/><line x1="210" y1="207" x2="210" y2="217" stroke="var(--muted)"/>'
+ +'<text x="120" y="230" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="inherit">8 m</text>'
+ +'</svg><figcaption>Desenho em escala: quadrado de 8 m, marcas dos atletas a 1,5 m do centro.</figcaption></figure>';
+RULES.forEach(r=>{ if(r.id==='area') r.b = COURT + r.b; });
+
+const RULE = Object.fromEntries(RULES.map(r=>[r.id,r]));
+const byCat = c => RULES.filter(r=>r.cat===c);
+const pnum = s => (s.match(/\d+/g)||[]).map(Number);
+function pageRange(list){ const n=list.flatMap(r=>pnum(r.p)); const a=Math.min(...n), b=Math.max(...n); return a===b?'p. '+a:'pp. '+a+'–'+b; }
+const pg = p => (/[–,]/.test(p)?'pp. ':'p. ')+p;
+const norm = s => (s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip = h => { const d=document.createElement('div'); d.innerHTML=h; return d.textContent; };
+RULES.forEach(r=>{ r._txt = norm(r.t+' '+r.s+' '+strip(r.b)); });
+
+/* ---------- Navegação ---------- */
+const TABS = [
+  {id:'home', href:'#/', label:'Início', icon:'home'},
+  {id:'regras', href:'#/regras', label:'Regras', icon:'book'},
+  {id:'individual', href:'#/individual', label:'Individual', icon:'user'},
+  {id:'equipes', href:'#/equipes', label:'Equipes', icon:'users'},
+  {id:'sinais', href:'#/sinais', label:'Sinais', icon:'flag'}
+];
+function renderNav(active){
+  document.getElementById('tabs').innerHTML = TABS.map(t=>'<a href="'+t.href+'"'+(t.id===active?' aria-current="page"':'')+'>'+ic(t.icon)+'<span>'+t.label+'</span></a>').join('');
+  const extra = [{id:'glossario',href:'#/glossario',label:'Glossário',icon:'text'},{id:'buscar',href:'#/buscar',label:'Buscar',icon:'search'}];
+  document.getElementById('sidenav').innerHTML = TABS.map(t=>'<a href="'+t.href+'"'+(t.id===active?' aria-current="page"':'')+'>'+ic(t.icon)+t.label+'</a>').join('')
+    + '<div class="grp">Consulta</div>' + extra.map(t=>'<a href="'+t.href+'"'+(t.id===active?' aria-current="page"':'')+'>'+ic(t.icon)+t.label+'</a>').join('');
+}
+const MARK = '<svg class="mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="#8c2427"/><circle cx="18.5" cy="9.5" r="5.5" fill="#d7261e"/><rect x="5" y="19" width="18" height="3" rx="1.5" fill="#fff"/></svg>';
+function renderTop(o){
+  const t=document.getElementById('top');
+  const right = '<a class="ib" href="#/buscar" aria-label="Buscar">'+ic('search')+'</a><button class="ib" id="theme1" aria-label="Alternar tema claro ou escuro">'+ic('moon')+'</button>';
+  t.innerHTML = o.back
+    ? '<button class="ib" id="back" aria-label="Voltar">'+ic('left')+'</button><div class="ttl">'+esc(o.title||'')+'</div>'+right
+    : '<a class="brand" href="#/">'+MARK+'Kumite WTKU</a>'+right;
+  if(o.back) document.getElementById('back').onclick=()=>goBack(o.back);
+  document.getElementById('theme1').onclick=toggleTheme;
+}
+const stack=[];
+function goBack(parent){ if(stack.length>1){ history.back(); } else { history.replaceState(null,'',parent); render(); } }
+const crumb = (href,label)=>'<a class="crumb" href="'+href+'">'+ic('left')+esc(label)+'</a>';
+
+/* ---------- Telas ---------- */
+const S = {};
+
+S.home = () => {
+  const gerais = GERAIS.flatMap(byCat), ind = byCat('individual'), eq = byCat('equipes');
+  const tile = (href,name,desc,n,unit) => '<a class="cat" href="'+href+'"><b>'+name+'</b><span class="d">'+desc+'</span><span class="f"><strong class="num">'+n+'</strong><span>'+unit+'</span>'+ic('right')+'</span></a>';
+  const es = ESSENTIALS.slice(0,5).map(e=>row('#/r/'+e.to+'?de=essenciais', e.t, e.x, pg(e.p))).join('');
+  return {tab:'home', top:{}, html:
+    '<h1>Regras de Kumite</h1><p class="lead">Livro WTKU, capítulo II (pp. 11–59) e Apêndices VIII e IX, em português. Escolha uma categoria.</p>'
+    +'<a class="field" href="#/buscar">'+ic('search')+'<span>Buscar regra, sinal ou termo</span></a>'
+    +(isStandalone()?'':'<div class="list" style="margin-top:10px"><button class="row" id="install">'+ic('phone','lic')+'<span class="tx"><b>Instalar como app</b><span>Abre em tela cheia, sem a barra de endereço, e funciona sem internet</span></span>'+ic('right')+'</button></div>')
+    +'<div class="cats">'
+      +tile('#/regras','Regras gerais','Pontuação, técnicas, faltas, saída, tempo e mais',gerais.length,'tópicos')
+      +tile('#/individual','Kumite individual','Formato, pontos e desempate',ind.length,'tópicos')
+      +tile('#/equipes','Kumite por equipes','3 atletas, soma de pontos',eq.length,'tópicos')
+      +tile('#/sinais','Sinais','Árbitro central e juízes de canto',SS.length+FS.length,'sinais')
+    +'</div>'
+    +'<section class="lead-card"><div class="hrow"><h2>Essencial para competir</h2></div><p class="lead">As regras que mais tiram ponto ou luta de quem não as conhece.</p>'
+      +'<div class="list">'+es+'</div><a class="more" href="#/c/essenciais">Ver as '+ESSENTIALS.length+' regras '+ic('right')+'</a></section>'
+    +'<h2>Consulta</h2><div class="list">'
+      +row('#/glossario','Glossário',Object.keys(G).length+' termos japoneses explicados',null,'text')
+      +row('#/buscar','Buscar','Procure em todas as regras, sinais e termos',null,'search')
+    +'</div><p class="foot-note">Em caso de dúvida, vale o texto do livro. Cada regra mostra a página para conferir.</p>'
+  , after(){ const b=document.getElementById('install'); if(b) b.onclick=installApp; }};
+};
+
+function row(href,title,sub,page,icon){
+  return '<a class="row" href="'+href+'">'+(icon?ic(icon,'lic'):'')+'<span class="tx"><b>'+title+'</b>'+(sub?'<span>'+sub+'</span>':'')+'</span>'+(page?'<span class="pill">'+page+'</span>':'')+ic('right')+'</a>';
+}
+
+S.regras = () => ({tab:'regras', top:{}, html:
+  '<h1>Regras gerais</h1><p class="lead">Valem para o kumite individual e por equipes. Toque numa categoria.</p>'
+  +'<div class="list">'+GERAIS.map(c=>{const l=byCat(c);return row('#/c/'+c,CATS[c].name,CATS[c].desc+' · '+l.length+' tópicos',pageRange(l));}).join('')+'</div>'
+  +'<h2>Consulta</h2><div class="list">'+row('#/glossario','Glossário',Object.keys(G).length+' termos japoneses',null,'text')+'</div>'
+});
+
+S.cat = (c) => {
+  const meta = CATS[c]; if(!meta) return S.notfound();
+  if(c==='essenciais'){
+    return {tab:'home', top:{back:'#/',title:meta.name}, html: crumb('#/','Início')
+      +'<h1>'+meta.name+'</h1><p class="lead">'+ESSENTIALS.length+' regras do livro que mais custam ponto ou luta. Toque para ver a explicação completa.</p>'
+      +'<div class="list">'+ESSENTIALS.map(e=>row('#/r/'+e.to+'?de=essenciais',e.t,e.x,pg(e.p))).join('')+'</div>'};
+  }
+  const l=byCat(c);
+  return {tab:meta.tab, top:{back:'#/regras',title:meta.name}, html: crumb('#/regras','Regras gerais')
+    +'<h1>'+meta.name+'</h1><p class="lead">'+meta.desc+'. No livro: '+pageRange(l)+'.</p>'
+    +'<div class="list">'+l.map(r=>row('#/r/'+r.id,r.t,r.s,pg(r.p))).join('')+'</div>'};
+};
+
+function formatScreen(c, strip, lead){
+  const l=byCat(c);
+  return {tab:c, top:{}, html:'<h1>'+CATS[c].name+'</h1><p class="lead">'+lead+'</p>'
+    +'<div class="strip">'+strip.map(s=>'<div><small>'+s[0]+'</small><strong class="num">'+s[1]+'</strong></div>').join('')+'</div>'
+    +'<h2>Tópicos</h2><div class="list">'+l.map(r=>row('#/r/'+r.id,r.t,r.s,pg(r.p))).join('')+'</div>'
+    +'<h2>Também vale aqui</h2><div class="list">'
+      +row('#/c/pontos','Pontuação','Ippon, waza-ari, timing e distância',pageRange(byCat('pontos')))
+      +row('#/c/faltas','Faltas e penalidades','Kei-koku, chui, hansoku e contato',pageRange(byCat('faltas')))
+      +row('#/c/saida','Saída e queda','Jo-gai, ten-to e penalty match',pageRange(byCat('saida')))
+    +'</div>'};
+}
+S.individual = () => formatScreen('individual',[['Tempo','1min30'],['Para vencer','Ippon'],['Desempate','1min30']],'Vence quem fizer ippon (ou 2 waza-ari) primeiro. Sem ippon, decide a tabela de pontos. No livro: '+pageRange(byCat('individual'))+'.');
+S.equipes = () => formatScreen('equipes',[['Atletas','3'],['Tempo cada','1min30'],['Ippon vale','10 pts']],'Cada atleta luta na ordem inscrita e a equipe com mais pontos somados vence. No livro: '+pageRange(byCat('equipes'))+'.');
+
+S.rule = (id, q) => {
+  const r = RULE[id]; if(!r) return S.notfound();
+  const fromEss = q.get('de')==='essenciais';
+  const meta = CATS[r.cat];
+  const parent = fromEss ? '#/c/essenciais' : (r.cat==='individual'?'#/individual':r.cat==='equipes'?'#/equipes':'#/c/'+r.cat);
+  const parentName = fromEss ? CATS.essenciais.name : meta.name;
+  let seq = fromEss ? ESSENTIALS.map(e=>e.to).filter((v,i,a)=>a.indexOf(v)===i) : byCat(r.cat).map(x=>x.id);
+  const i = seq.indexOf(id), prev = seq[i-1], next = seq[i+1], qs = fromEss?'?de=essenciais':'';
+  return {tab:meta.tab==='regras'&&!fromEss?'regras':(fromEss?'home':meta.tab), top:{back:parent,title:parentName}, html:
+    crumb(parent,parentName)
+    +'<div class="rhead"><h1>'+r.t+'</h1><p class="lead" style="margin-bottom:0">'+r.s+'</p>'
+    +'<div class="meta"><span class="pill acc">Livro: '+pg(r.p)+'</span><span class="pill">'+meta.name+'</span></div></div>'
+    +'<article class="prose">'+r.b+'</article>'
+    +'<nav class="pn" aria-label="Outras regras">'
+      +(prev?'<a href="#/r/'+prev+qs+'"><small>Anterior</small><b>'+RULE[prev].t+'</b></a>':'<span></span>')
+      +(next?'<a class="nx" href="#/r/'+next+qs+'"><small>Próxima</small><b>'+RULE[next].t+'</b></a>':'')
+    +'</nav>'};
+};
+
+let sigTab='ss', sigCat='';
+S.sinais = () => {
+  const list = sigTab==='ss'?SS:FS, ap = sigTab==='ss'?'VIII':'IX';
+  const used = [...new Set(list.map(r=>r[1]))];
+  const count = c => list.filter(r=>r[1]===c).length;
+  const rows = list.filter(r=>!sigCat||r[1]===sigCat);
+  return {tab:'sinais', top:{}, html:
+    '<h1>Sinais da arbitragem</h1><p class="lead">O número de cada sinal é o mesmo da tabela do livro (Apêndice '+ap+').</p>'
+    +'<div class="seg" role="group" aria-label="Quem sinaliza"><button data-st="ss" aria-pressed="'+(sigTab==='ss')+'">Árbitro central · '+SS.length+'</button><button data-st="fs" aria-pressed="'+(sigTab==='fs')+'">Juízes de canto · '+FS.length+'</button></div>'
+    +'<div class="chips" role="group" aria-label="Filtrar por tipo"><button data-sc="" aria-pressed="'+(!sigCat)+'">Todos <span>'+list.length+'</span></button>'
+      +used.map(c=>'<button data-sc="'+c+'" aria-pressed="'+(sigCat===c)+'">'+CAT_LABEL[c]+' <span>'+count(c)+'</span></button>').join('')+'</div>'
+    +'<div class="list">'+(rows.map(r=>sigRow(r,ap)).join('')||'<div class="empty">Nenhum sinal nesse filtro.</div>')+'</div>'
+  , after(){
+    document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{sigTab=b.dataset.st;sigCat='';render(true);});
+    document.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{sigCat=b.dataset.sc;render(true);});
+    const on=document.querySelector('[data-sc][aria-pressed="true"]'); if(on&&sigCat) on.scrollIntoView({block:'nearest',inline:'center'});
+  }};
+};
+const sigRow = (r,ap,showAp) => '<div class="sig"><span class="n" aria-label="Sinal '+r[0]+' do Apêndice '+ap+'">'+r[0]+'</span><b>'+esc(r[2])+'</b><span class="m">'+esc(r[3])+' <span class="h">· '+(showAp?(ap==='VIII'?'Árbitro central, Ap. VIII':'Juízes de canto, Ap. IX'):CAT_LABEL[r[1]])+'</span></span><span class="h">'+esc(r[4])+'</span></div>';
+
+S.glossario = () => {
+  const keys = Object.keys(G).sort((a,b)=>G[a][0].localeCompare(G[b][0],'pt'));
+  return {tab:'regras', top:{back:'#/regras',title:'Glossário'}, html: crumb('#/regras','Regras gerais')
+    +'<h1>Glossário</h1><p class="lead">'+keys.length+' termos japoneses do livro. Toque para ver a explicação e ir à regra.</p>'
+    +'<label class="field">'+ic('search')+'<span class="sr">Filtrar termos</span><input id="gq" type="search" placeholder="Filtrar termos" autocomplete="off"></label>'
+    +'<div class="list" id="gl" style="margin-top:12px"></div>'
+  , after(){
+    const draw = q => { q=norm(q); const v=keys.filter(k=>!q||norm(G[k][0]+' '+G[k][1]).includes(q));
+      document.getElementById('gl').innerHTML = v.map(k=>'<button class="row gx" data-t="'+k+'"><span class="tx"><b>'+G[k][0]+'</b><span>'+G[k][1]+'</span></span><span class="pill">'+pg(G[k][2])+'</span></button>').join('')||'<div class="empty">Nenhum termo com esse nome.</div>'; };
+    draw(''); document.getElementById('gq').oninput=e=>draw(e.target.value);
+  }};
+};
+
+let lastQ='';
+S.buscar = () => ({tab:'buscar', top:{back:'#/',title:'Buscar'}, html: crumb('#/','Início')
+  +'<h1>Buscar</h1><label class="field">'+ic('search')+'<span class="sr">Buscar</span><input id="q" type="search" placeholder="Ex.: queda, chute, empate, chui" autocomplete="off" value="'+esc(lastQ)+'"></label><div id="res"></div>'
+, after(){
+  const inp=document.getElementById('q'), out=document.getElementById('res');
+  const go = v => { lastQ=v; const q=norm(v.trim());
+    if(!q){ out.innerHTML='<p class="res-h">Sugestões</p><div class="list">'+['jo-gai','queda','chui','empate','chute','equipe'].map(s=>'<button class="row" data-q="'+s+'"><span class="tx"><b>'+s+'</b></span>'+ic('right')+'</button>').join('')+'</div>'; bind(); return; }
+    const rr=RULES.filter(r=>r._txt.includes(q));
+    const ss=[...SS.map(r=>[r,'VIII']),...FS.map(r=>[r,'IX'])].filter(([r])=>norm(r.join(' ')).includes(q));
+    const gg=Object.keys(G).filter(k=>norm(G[k][0]+' '+G[k][1]).includes(q));
+    if(!rr.length&&!ss.length&&!gg.length){ out.innerHTML='<div class="list" style="margin-top:16px"><div class="empty">Nada encontrado para “'+esc(v)+'”. Tente outra palavra, como saída, queda ou chute.</div></div>'; return; }
+    out.innerHTML =
+      (rr.length?'<p class="res-h">Regras · '+rr.length+'</p><div class="list">'+rr.map(r=>row('#/r/'+r.id,r.t,CATS[r.cat].name,pg(r.p))).join('')+'</div>':'')
+      +(gg.length?'<p class="res-h">Termos · '+gg.length+'</p><div class="list">'+gg.map(k=>'<button class="row gx" data-t="'+k+'"><span class="tx"><b>'+G[k][0]+'</b><span>'+G[k][1]+'</span></span>'+ic('right')+'</button>').join('')+'</div>':'')
+      +(ss.length?'<p class="res-h">Sinais · '+ss.length+'</p><div class="list">'+ss.slice(0,30).map(([r,ap])=>sigRow(r,ap,true)).join('')+'</div>':'');
+  };
+  const bind=()=>out.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{inp.value=b.dataset.q;go(inp.value);});
+  let tm; inp.oninput=()=>{clearTimeout(tm);tm=setTimeout(()=>go(inp.value),120);};
+  go(lastQ); if(matchMedia('(hover:hover)').matches) inp.focus();
+}});
+
+S.notfound = () => ({tab:'home', top:{back:'#/',title:''}, html:'<h1>Página não encontrada</h1><p class="lead">Esse endereço não existe no app.</p><div class="list">'+row('#/','Voltar ao início',null,null,'home')+'</div>'});
+
+/* ---------- Roteador ---------- */
+const scrollMem = {};
+let curHash = null;
+function parse(){
+  const h = location.hash.replace(/^#/,'') || '/';
+  const [path, qs] = h.split('?');
+  return {path, q:new URLSearchParams(qs||''), key:h};
+}
+function render(keepScroll){
+  if(sheet.classList.contains('open')) closeTerm(true);
+  const {path,q,key} = parse();
+  if(curHash && !keepScroll) scrollMem[curHash]=scrollY;
+  const p = path.split('/').filter(Boolean);
+  let v;
+  if(!p.length) v=S.home();
+  else if(p[0]==='regras') v=S.regras();
+  else if(p[0]==='individual') v=S.individual();
+  else if(p[0]==='equipes') v=S.equipes();
+  else if(p[0]==='sinais') v=S.sinais();
+  else if(p[0]==='glossario') v=S.glossario();
+  else if(p[0]==='buscar') v=S.buscar();
+  else if(p[0]==='c') v=S.cat(p[1]);
+  else if(p[0]==='r') v=S.rule(p[1],q);
+  else v=S.notfound();
+  const m=document.getElementById('main');
+  m.innerHTML='<div class="scr">'+v.html+'</div>';
+  renderNav(v.tab); renderTop(v.top||{});
+  document.title = (m.querySelector('h1')?.textContent||'') + ' · Kumite WTKU';
+  if(v.after) v.after();
+  if(!keepScroll){ const y = p[0]==='r' ? 0 : (scrollMem[key]||0); scrollTo(0,y); }
+  curHash=key; onScroll();
+}
+function track(){ const k=parse().key; if(stack.length>1&&stack[stack.length-2]===k) stack.pop(); else if(stack[stack.length-1]!==k) stack.push(k); }
+addEventListener('hashchange',()=>{ track(); render(); });
+track();
+
+/* ---------- Painel de termo ---------- */
+const sheet=document.getElementById('sheet'), scrim=document.getElementById('scrim');
+let lastFocus=null;
+function openTerm(k){
+  const g=G[k]; if(!g) return; lastFocus=document.activeElement;
+  document.getElementById('sh-t').textContent=g[0];
+  document.getElementById('sh-b').innerHTML='<p>'+esc(g[1])+'</p><span class="pill acc">Livro: '+pg(g[2])+'</span>';
+  document.getElementById('sh-go').href='#/r/'+g[3]; document.getElementById('sh-go').style.display=''; sheet.querySelector('.acts').style.gridTemplateColumns='';
+  sheet.classList.add('open'); scrim.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+  document.getElementById('sh-x').focus();
+}
+function closeTerm(silent){ sheet.classList.remove('open'); scrim.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); if(silent!==true&&lastFocus&&document.contains(lastFocus)) lastFocus.focus(); }
+scrim.onclick=closeTerm; document.getElementById('sh-x').onclick=closeTerm;
+
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeTerm(); });
+document.addEventListener('click',e=>{ const t=e.target.closest('[data-t]'); if(t){ e.preventDefault(); openTerm(t.dataset.t); } });
+
+/* ---------- Tema e barra superior ---------- */
+function toggleTheme(){
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark?'light':'dark';
+  try{ localStorage.setItem('kumite-theme', r.dataset.theme); }catch(_){}
+}
+try{ const s=localStorage.getItem('kumite-theme'); if(s) document.documentElement.dataset.theme=s; }catch(_){}
+document.getElementById('theme2').onclick=toggleTheme;
+function onScroll(){ document.getElementById('top').classList.toggle('lined', scrollY>4); }
+addEventListener('scroll',onScroll,{passive:true});
+
+/* ---------- Instalar (PWA) ---------- */
+function isStandalone(){ return matchMedia('(display-mode: standalone)').matches || navigator.standalone===true; }
+let installEvt=null;
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; });
+addEventListener('appinstalled',()=>{ installEvt=null; render(true); });
+function openInfo(title, html){
+  lastFocus=document.activeElement;
+  document.getElementById('sh-t').textContent=title;
+  document.getElementById('sh-b').innerHTML=html;
+  document.getElementById('sh-go').style.display='none'; sheet.querySelector('.acts').style.gridTemplateColumns='1fr';
+  sheet.classList.add('open'); scrim.classList.add('open'); sheet.setAttribute('aria-hidden','false');
+  document.getElementById('sh-x').focus();
+}
+async function installApp(){
+  if(installEvt){ installEvt.prompt(); try{ await installEvt.userChoice; }catch(_){} installEvt=null; return; }
+  const ua=navigator.userAgent, ios=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const steps = ios
+    ? '<ol class="steps"><li>Abra este link no <b>Safari</b>.</li><li>Toque no botão <b>Compartilhar</b> (o quadrado com a seta para cima).</li><li>Toque em <b>Adicionar à Tela de Início</b> e depois em <b>Adicionar</b>.</li></ol>'
+    : '<ol class="steps"><li>Abra este link no <b>Chrome</b>.</li><li>Toque no menu <b>⋮</b> no canto de cima.</li><li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li></ol>';
+  openInfo('Instalar como app', steps+'<p>Depois, abra pelo ícone <b>Kumite</b>: o app abre em tela cheia, sem a barra de endereço, e funciona mesmo sem internet.</p>');
+}
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost') && window.top===window){
+  addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+
+render();
+</script>
+</body>
+</html>
