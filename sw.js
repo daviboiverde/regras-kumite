@@ -1,6 +1,6 @@
-// Service worker do app Kumite WTKU: guarda o app para funcionar sem internet.
-const VERSION = 'kumite-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-32.png', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
+// Service worker do app WTKU Regras: guarda o app para funcionar sem internet.
+const VERSION = 'wtku-regras-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.ico', './icons/icon-32.png', './icons/icon-48.png', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
